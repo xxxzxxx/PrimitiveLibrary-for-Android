@@ -7,7 +7,7 @@
  * The MIT Licens (http://opensource.org/licenses/mit-license.php)
  * GPL Version 2 licenses (http://www.gnu.org/licenses/gpl-2.0.html)
  */
-package com.primitive.library.helper;
+package com.primitive.library.helper.cipher;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
@@ -17,12 +17,13 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import android.util.Base64;
+
+import com.primitive.library.helper.Logger;
 
 /**
  * CipherHelper
@@ -67,25 +68,5 @@ public class CipherHelper {
 		byte[] decript = cipher.doFinal(decode);
 		String decryptData = new String(decript,"UTF-8");
 		return decryptData;
-	}
-
-	public static String requestSha256HMAC(
-			final String key,
-			final String content) {
-		Logger.start();
-		String signature = null;
-		try {
-			final byte[] secretyKeyBytes = key.getBytes();
-			final SecretKeySpec secretKeySpec = new SecretKeySpec(
-					secretyKeyBytes, "HmacSHA256");
-			final Mac mac = Mac.getInstance("HmacSHA256");
-			mac.init(secretKeySpec);
-			final byte[] data = content.getBytes("UTF-8");
-			final byte[] rawHmac = mac.doFinal(data);
-			signature = Base64.encodeToString(rawHmac, 0, rawHmac.length,Base64.DEFAULT);
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
-		return signature;
 	}
 }
