@@ -15,6 +15,7 @@ import com.primitive.library.helper.Logger;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
@@ -25,27 +26,40 @@ import android.os.RemoteException;
 /**
  * Manifest.xml adding
  * <service android:name="com.primitive.library.service.PeriodicService"/>
- * @author xxx
+ * @author xxxzxxx
  *
  */
 public abstract class PeriodicService extends Service {
 	protected abstract void execute();
+	private final static long defaultIntervalTime = 60*1000;
 	private long intervalMS = 0;
+	protected final IBinder binder;
+	private Thread ansyncdTask = null;
+	private AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 
-	public PeriodicService(final long intervalMS){
-		super();
-		Logger.start();
-		this.intervalMS = intervalMS;
-	}
-
-	protected final Binder binder = new Binder() {
+	public class PeriodicServiceBinder extends Binder {
+		Service getService(){
+			Logger.start();
+			return PeriodicService.this;
+		}
 		@Override
 		protected boolean onTransact( int code, Parcel data, Parcel reply, int flags ) throws RemoteException{
 			Logger.start();
 			return super.onTransact(code, data, reply, flags);
 		}
 	};
-	private AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+
+	public PeriodicService(final long intervalMS){
+		super();
+		this.intervalMS = intervalMS <= 0 ? defaultIntervalTime : intervalMS;
+		this.binder = new PeriodicServiceBinder();
+	}
+
+	protected PeriodicService(final long intervalMS , final PeriodicServiceBinder binder){
+		super();
+		this.intervalMS = intervalMS <= 0 ? defaultIntervalTime : intervalMS;
+		this.binder = binder;
+	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -53,7 +67,10 @@ public abstract class PeriodicService extends Service {
 		return binder;
 	}
 
-	private Thread ansyncdTask = null;
+	@Override
+	public void onRebind(Intent intent) {
+		Logger.start();
+	}
 
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -63,8 +80,10 @@ public abstract class PeriodicService extends Service {
 			ansyncdTask = new Thread(
 				new Runnable(){
 					public void run() {
+						Logger.start();
 						execute();
 						scheduleNextTime();
+						Logger.end();
 					}
 				}
 			);
@@ -81,6 +100,7 @@ public abstract class PeriodicService extends Service {
 		long now = System.currentTimeMillis();
 		PendingIntent alarmSender = PendingIntent.getService(this,0,new Intent(this, this.getClass()),0);
 		alarmManager.set(AlarmManager.RTC,now + intervalMS,alarmSender);
+		Logger.end();
 	}
 
 	public PeriodicService start(Context context){
@@ -88,6 +108,7 @@ public abstract class PeriodicService extends Service {
 		Intent intent = new Intent(context, this.getClass());
 		intent.putExtra("type", "start");
 		context.startService(intent);
+		Logger.end();
 		return this;
 	}
 
@@ -98,5 +119,6 @@ public abstract class PeriodicService extends Service {
 		AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 		alarmManager.cancel(pendingIntent);
 		stopSelf();
+		Logger.end();
 	}
 }
