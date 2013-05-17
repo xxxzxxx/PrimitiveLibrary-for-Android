@@ -10,15 +10,79 @@
 
 package com.primitive.library.service;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
+import android.os.Parcel;
+import android.os.RemoteException;
 
-public class PeriodicService extends Service {
+/**
+ * Manifest.xml adding
+ * <service android:name="com.primitive.library.service.PeriodicService"/>
+ * @author xxx
+ *
+ */
+public abstract class PeriodicService extends Service {
+	protected abstract long getIntervalMS();
+	protected abstract void execute();
+	protected abstract void setNextBootPlan();
+	protected final Binder binder = new Binder() {
+		@Override
+		protected boolean onTransact( int code, Parcel data, Parcel reply, int flags ) throws RemoteException{
+			return super.onTransact(code, data, reply, flags);
+		}
+	};
+	private AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return null;
+		return binder;
 	}
 
+	private Thread ansyncdTask = null;
+
+	@Override
+	public void onStart(Intent intent, int startId) {
+		super.onStart(intent, startId);
+		if(ansyncdTask != null){
+			ansyncdTask = new Thread(
+				new Runnable(){
+					public void run() {
+						execute();
+						setNextBootPlan();
+					}
+				}
+			);
+		}
+		if(!ansyncdTask.isAlive()){
+			ansyncdTask.start();
+		}else{
+			//TODO:
+		}
+	}
+
+	public void scheduleNextTime() {
+		long now = System.currentTimeMillis();
+		PendingIntent alarmSender = PendingIntent.getService(this,0,new Intent(this, this.getClass()),0);
+		alarmManager.set(AlarmManager.RTC,now + getIntervalMS(),alarmSender);
+	}
+
+	public PeriodicService start(Context context){
+		Intent intent = new Intent(context, this.getClass());
+		intent.putExtra("type", "start");
+		context.startService(intent);
+		return this;
+	}
+
+	public void stop(Context context){
+		Intent intent = new Intent(context, this.getClass());
+		PendingIntent pendingIntent = PendingIntent.getService(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+		alarmManager.cancel(pendingIntent);
+		stopSelf();
+	}
 }
