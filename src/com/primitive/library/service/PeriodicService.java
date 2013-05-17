@@ -10,6 +10,8 @@
 
 package com.primitive.library.service;
 
+import com.primitive.library.helper.Logger;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -27,12 +29,19 @@ import android.os.RemoteException;
  *
  */
 public abstract class PeriodicService extends Service {
-	protected abstract long getIntervalMS();
 	protected abstract void execute();
-	protected abstract void setNextBootPlan();
+	private long intervalMS = 0;
+
+	public PeriodicService(final long intervalMS){
+		super();
+		Logger.start();
+		this.intervalMS = intervalMS;
+	}
+
 	protected final Binder binder = new Binder() {
 		@Override
 		protected boolean onTransact( int code, Parcel data, Parcel reply, int flags ) throws RemoteException{
+			Logger.start();
 			return super.onTransact(code, data, reply, flags);
 		}
 	};
@@ -40,6 +49,7 @@ public abstract class PeriodicService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		Logger.start();
 		return binder;
 	}
 
@@ -47,13 +57,14 @@ public abstract class PeriodicService extends Service {
 
 	@Override
 	public void onStart(Intent intent, int startId) {
+		Logger.start();
 		super.onStart(intent, startId);
 		if(ansyncdTask != null){
 			ansyncdTask = new Thread(
 				new Runnable(){
 					public void run() {
 						execute();
-						setNextBootPlan();
+						scheduleNextTime();
 					}
 				}
 			);
@@ -65,13 +76,15 @@ public abstract class PeriodicService extends Service {
 		}
 	}
 
-	public void scheduleNextTime() {
+	protected void scheduleNextTime() {
+		Logger.start();
 		long now = System.currentTimeMillis();
 		PendingIntent alarmSender = PendingIntent.getService(this,0,new Intent(this, this.getClass()),0);
-		alarmManager.set(AlarmManager.RTC,now + getIntervalMS(),alarmSender);
+		alarmManager.set(AlarmManager.RTC,now + intervalMS,alarmSender);
 	}
 
 	public PeriodicService start(Context context){
+		Logger.start();
 		Intent intent = new Intent(context, this.getClass());
 		intent.putExtra("type", "start");
 		context.startService(intent);
@@ -79,6 +92,7 @@ public abstract class PeriodicService extends Service {
 	}
 
 	public void stop(Context context){
+		Logger.start();
 		Intent intent = new Intent(context, this.getClass());
 		PendingIntent pendingIntent = PendingIntent.getService(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
