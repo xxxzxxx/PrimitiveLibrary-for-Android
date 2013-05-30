@@ -80,7 +80,7 @@ public class Column {
 		sql.append(name);
 		sql.append(" " + typeToString());
 		if(primaryKey){
-			sql.append(" PRIMARY KEY");			
+			sql.append(" PRIMARY KEY");
 		}
 		else if(notNull){
 			sql.append(" NOT NULL");

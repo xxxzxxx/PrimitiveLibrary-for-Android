@@ -30,14 +30,19 @@ public class OpenHelper extends SQLiteOpenHelper{
 	public void onCreate(SQLiteDatabase db) {
 		Table[] tables = database.getTables();
 		if(tables != null){
-			for(Table table : tables){
-				db.execSQL(table.getCreateTableSQL());
+			for(final Table tbl : tables){
+				db.execSQL(tbl.getCreateTableSQL());
 			}
 		}
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		
+		Table[] tables = database.getTables();
+		if(tables != null){
+			for(final Table tbl : tables){
+				tbl.upgrade(db, oldVersion, newVersion);
+			}
+		}
 	}
 }

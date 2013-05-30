@@ -10,13 +10,16 @@
 
 package com.primitive.library.database;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import com.primitive.library.helper.Logger;
 
-public class Table {
+public abstract class Table{
 	/** */
 	private final String name;
 	/** */
 	private Column[] columns;
+
 	/**
 	 * 
 	 * @param name
@@ -28,6 +31,7 @@ public class Table {
 		this.columns = columns;
 		Logger.end();
 	}
+
 	/**
 	 * 
 	 * @return
@@ -57,4 +61,6 @@ public class Table {
 	public Column[] getColumns() {
 		return columns;
 	}
+
+	public abstract void upgrade(SQLiteDatabase db, int oldVersion, int newVersion);
 }
