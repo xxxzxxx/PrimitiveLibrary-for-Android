@@ -1,6 +1,6 @@
 /**
  * AbstractContentProvider
- * 
+ *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
@@ -10,24 +10,20 @@
 
 package com.primitive.library.database;
 
-import com.primitive.library.helper.Logger;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.primitive.library.helper.Logger;
+
 public abstract class AbstractContentProvider extends ContentProvider{
-	protected OpenHelper openHelper;
-	protected abstract OpenHelper createOpenHelper();
-	protected abstract String getAythority();
-	protected abstract UriMatcher getUriMatcher();
-	protected abstract String matchies(final int matchIndex);
+	protected AbstractDataSource ds;
+	protected abstract AbstractDataSource createDataSource();
 
 	private String getTableName(final Uri uri) {
 		final String[] paths = uri.getPath().split("/");
@@ -43,7 +39,7 @@ public abstract class AbstractContentProvider extends ContentProvider{
 	@Override
 	public int delete(Uri uri, String where, String[] whereArgs) {
 		Logger.start();
-		final SQLiteDatabase db = openHelper.getWritableDatabase();
+		final SQLiteDatabase db = ds.openHelper.getWritableDatabase();
 		final String tableName = getTableName(uri);
 		Logger.debug(tableName);
 		final int count = db.delete(tableName, where, whereArgs);
@@ -53,21 +49,11 @@ public abstract class AbstractContentProvider extends ContentProvider{
 	}
 
 	/**
-	 * @see android.content.ContentProvider#getType(android.net.Uri)
-	 */
-	@Override
-	public String getType(Uri uri) {
-		UriMatcher matcher= getUriMatcher();
-		int matchIndex = matcher.match(uri);
-		return matchies(matchIndex);
-	}
-
-	/**
 	 * @see android.content.ContentProvider#insert(android.net.Uri, android.content.ContentValues)
 	 */
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		final SQLiteDatabase db = openHelper.getWritableDatabase();
+		final SQLiteDatabase db = ds.openHelper.getWritableDatabase();
 		final long id = db.insert(getTableName(uri), null, values);
 		final Uri newUri = ContentUris.withAppendedId(uri, id);
 		getContext().getContentResolver().notifyChange(newUri, null);
@@ -79,7 +65,7 @@ public abstract class AbstractContentProvider extends ContentProvider{
 	 */
 	@Override
 	public boolean onCreate() {
-		openHelper = createOpenHelper();
+		ds = createDataSource();
 		return true;
 	}
 
@@ -94,7 +80,7 @@ public abstract class AbstractContentProvider extends ContentProvider{
 		if (!TextUtils.isEmpty(sortOrder)) {
 			orderBy = sortOrder;
 		}
-		final SQLiteDatabase db = openHelper.getReadableDatabase();
+		final SQLiteDatabase db = ds.openHelper.getReadableDatabase();
 		final Cursor c = sqliteQueryBuilder.query(db, projection, selection, selectionArgs, null, null, orderBy);
 		c.setNotificationUri(getContext().getContentResolver(), uri);
 		return c;
@@ -105,7 +91,7 @@ public abstract class AbstractContentProvider extends ContentProvider{
 	 */
 	@Override
 	public int update(Uri uri, ContentValues values, String where,String[] whereArgs) {
-		final SQLiteDatabase db = openHelper.getWritableDatabase();
+		final SQLiteDatabase db = ds.openHelper.getWritableDatabase();
 		final int count = db.update(getTableName(uri), values, where, whereArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return count;
