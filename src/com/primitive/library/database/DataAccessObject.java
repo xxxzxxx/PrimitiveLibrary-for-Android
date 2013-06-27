@@ -1,6 +1,6 @@
 /**
  * DataAccessObject
- * 
+ *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
@@ -12,87 +12,30 @@ package com.primitive.library.database;
 
 import java.util.ArrayList;
 
-import com.primitive.library.helper.Logger;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.primitive.library.helper.Logger;
+
 /**
  * @author xxx
- *
- * @param <DMODEL>
+ * @param <MDL>
  */
-public class DataAccessObject<DMODEL extends DataModel<?>,TBL extends Table> {
+public class DataAccessObject<MDL extends DataModel<?>> extends BaseDataAccessObject{
 	/**
-	 * 
-	 * @param context
-	 * @param uri
-	 * @param values
-	 * @return
+	 *
 	 */
-	public static Uri insert(final Context context,final Uri uri,final ContentValues values){
-		return context.getContentResolver().insert(uri,values);
-	}
-
-	/**
-	 * 
-	 * @param context
-	 * @param uri
-	 * @param values
-	 * @param id
-	 * @return
-	 */
-	public static int update(final Context context,final Uri uri,final ContentValues values,final String id){
-		return context.getContentResolver().update(uri, values, BaseColumns._ID + "=?", new String[] {id});
-	}
-
-	/**
-	 * 
-	 * @param context
-	 * @param uri
-	 * @param id
-	 * @return
-	 */
-	public static int delete(final Context context,final Uri uri,final String id){
-		return context.getContentResolver().delete(uri, BaseColumns._ID + "=?", new String[] {id});
-	}
-
-	/**
-	 * 
-	 * @param context
-	 * @param uri
-	 * @return
-	 */
-	public static int deleteAll(final Context context,final Uri uri){
-		return context.getContentResolver().delete(uri, null, null);
-	}
-
-	/**
-	 * 
-	 * @param context
-	 * @param uri
-	 * @param id
-	 * @param projectiuon
-	 * @return
-	 */
-	public static Cursor find(
-			final Context context,
-			final Uri uri,
-			final String[] projectiuon,
-			final String whereQuery,
-			final String[] whereValue
-			){
-		return context.getContentResolver().query(uri, projectiuon, whereQuery, whereValue, null);
-	}
-
 	private final Context context;
+	/**
+	 *
+	 */
 	protected final Uri uri;
 
 	/**
-	 * 
+	 *
 	 * @param context
 	 * @param uri
 	 */
@@ -103,7 +46,7 @@ public class DataAccessObject<DMODEL extends DataModel<?>,TBL extends Table> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param values
 	 * @return
 	 */
@@ -113,18 +56,18 @@ public class DataAccessObject<DMODEL extends DataModel<?>,TBL extends Table> {
 	}
 
 	/**
-	 * 
-	 * @param dataobject
+	 *
+	 * @param model
 	 * @return
 	 */
-	public Uri insert(final DMODEL dataobject){
+	public Uri insert(final DataModel<?> model){
 		Logger.start();
-		Logger.info(dataobject.getClass().getSimpleName());
-		return DataAccessObject.insert(context,uri,dataobject.changeContentValues());
+		Logger.info(model.getClass().getSimpleName());
+		return DataAccessObject.insert(context,uri,model.changeContentValues());
 	}
 
 	/**
-	 * 
+	 *
 	 * @param values
 	 * @param id
 	 * @return
@@ -136,14 +79,14 @@ public class DataAccessObject<DMODEL extends DataModel<?>,TBL extends Table> {
 
 	/**
 	 * update target id recode
-	 * @param dataobject
+	 * @param model
 	 * @param id
 	 * @return
 	 */
-	public int update(final DMODEL dataobject,final String id){
+	public int update(final DataModel<?> model,final String id){
 		Logger.start();
-		Logger.info(dataobject.getClass().getSimpleName());
-		return DataAccessObject.update(context,uri, dataobject.changeContentValues(), id);
+		Logger.info(model.getClass().getSimpleName());
+		return DataAccessObject.update(context,uri, model.changeContentValues(), id);
 	}
 
 	/**
@@ -166,11 +109,38 @@ public class DataAccessObject<DMODEL extends DataModel<?>,TBL extends Table> {
 	}
 
 	/**
-	 * return all recode
-	 * @param dataobject
+	 *
+	 * @param context
+	 * @param whereQuery
+	 * @param whereValue
+	 * @param model
 	 * @return
 	 */
-	public DataModel<?>[] findAll(final DMODEL model){
+	public DataModel<?>[] find(
+		final String whereQuery,
+		final String[] whereValue,
+		final DataModel<?> model
+	){
+		ArrayList<DataModel<?>> results = new ArrayList<DataModel<?>>();
+		Cursor cursor = DataAccessObject.find(context,uri, model.getProjectiuon(),whereQuery,whereValue);
+		try{
+			while(cursor.moveToNext()){
+				results.add(model.changeModel(cursor));
+			}
+		}finally{
+			if(!cursor.isClosed()){
+				cursor.close();
+			}
+		}
+		return results.toArray(model.genericObjectArray());
+	}
+
+	/**
+	 * return all recode
+	 * @param model
+	 * @return
+	 */
+	public DataModel<?>[] findAll(final DataModel<?> model){
 		Logger.start();
 		Logger.info(model.getClass().getSimpleName());
 		Cursor cursor = DataAccessObject.find(context,uri, model.getProjectiuon(),null,null);
@@ -188,36 +158,34 @@ public class DataAccessObject<DMODEL extends DataModel<?>,TBL extends Table> {
 	}
 
 	/**
-	 * findByPrimaryKey
-	 * @param primaryKey
+	 * findById
+	 * @param id
+	 * @param model
 	 * @return
 	 */
-	public DataModel<?> findByPrimaryKey(final DMODEL primaryKey){
+	public DataModel<?> findById(final String id,final DataModel<?> model){
 		Logger.start();
-		Logger.info(primaryKey.getClass().getSimpleName());
+		Logger.info(model.getClass().getSimpleName());
 
-		Column[] primaryKeys = primaryKey.getPrimaryKeys();
-		String[] values = primaryKey.getPrimaryKeyValues();
-		StringBuilder builder = new StringBuilder();
-		for (int index = 0; index < primaryKeys.length; index ++){
-			Column col = primaryKeys[index];
-			if(index > 0){
-				builder.append(" AND ");
-			}
-			builder.append(col.getName()+"=?");
-		}
+		Cursor cursor = DataAccessObject.find(
+				context,
+				uri,
+				model.getProjectiuon(),
+				BaseColumns._ID+"=?",
+				new String[]{id}
+			);
+		DataModel<?> result = null;
 
-		Cursor cursor = DataAccessObject.find(context,uri,primaryKey.getProjectiuon(),builder.toString(),values);
-		DataModel<?> model = null;
 		try{
 			while(cursor.moveToNext()){
-				model = primaryKey.changeModel(cursor);
+				result = model.changeModel(cursor);
 			}
 		}finally{
 			if(!cursor.isClosed()){
 				cursor.close();
 			}
 		}
-		return model;
+
+		return result;
 	}
 }

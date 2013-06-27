@@ -1,6 +1,6 @@
 /**
  * Table
- * 
+ *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
@@ -10,6 +10,8 @@
 
 package com.primitive.library.database;
 
+import java.util.ArrayList;
+
 import android.database.sqlite.SQLiteDatabase;
 
 import com.primitive.library.helper.Logger;
@@ -17,11 +19,12 @@ import com.primitive.library.helper.Logger;
 public abstract class Table{
 	/** */
 	private final String name;
+
 	/** */
 	private Column[] columns;
 
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @param columns
 	 */
@@ -32,8 +35,28 @@ public abstract class Table{
 		Logger.end();
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setColumns(Column[] columns) {
+		this.columns = columns;
+	}
+
 	/**
-	 * 
+	 *
+	 * @return
+	 */
+	public String[] getProjectiuon() {
+		ArrayList<String> projection = new ArrayList<String>();
+		for (Column col : columns){
+			projection.add(col.getName());
+		}
+		return projection.toArray(new String[0]);
+	}
+
+	/**
+	 *
 	 * @return
 	 */
 	public String getCreateTableSQL(){
@@ -55,7 +78,7 @@ public abstract class Table{
 		return sql.toString();
 	}
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Column[] getColumns() {
