@@ -1,6 +1,6 @@
 /**
  * CipherHelper
- * 
+ *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -29,44 +30,195 @@ import com.primitive.library.helper.Logger;
  * CipherHelper
  */
 public class CipherHelper {
-	public static String decryptAES256(
-			final String encryptedData,
-			final String passphrase, 
-			final String iv)
-		throws NoSuchAlgorithmException, 
+	public enum Algorithm {
+		AES,
+		DES,
+		DESede,
+		RSA,
+	}
+	public enum Mode{
+		CBC,
+		ECB,
+	}
+	public enum Padding{
+		NoPadding,
+		PKCS1Padding,
+		PKCS5Padding,
+		PKCS7Padding,
+		OAEPWithSHA1AndMGF1Padding,
+		OAEPWithSHA256AndMGF1Paddin,
+	}
+	private final static HashMap<Algorithm,String> AlgorithmMap;
+	private final static HashMap<Mode,String> ModeMap;
+	private final static HashMap<Padding,String> PaddingMap;
+	static {
+		AlgorithmMap = new HashMap<Algorithm,String>();
+		ModeMap = new HashMap<Mode,String>();
+		PaddingMap = new HashMap<Padding,String>();
+		AlgorithmMap.put(Algorithm.AES, "AES");
+		AlgorithmMap.put(Algorithm.DES, "DES");
+		AlgorithmMap.put(Algorithm.DESede, "DESede");
+		AlgorithmMap.put(Algorithm.RSA, "RSA");
+		ModeMap.put(Mode.CBC,"CBC");
+		ModeMap.put(Mode.ECB,"ECB");
+		PaddingMap.put(Padding.NoPadding,"NoPadding");
+		PaddingMap.put(Padding.PKCS1Padding,"PKCS1Padding");
+		PaddingMap.put(Padding.PKCS5Padding,"PKCS5Padding");
+		PaddingMap.put(Padding.PKCS7Padding,"PKCS7Padding");
+		PaddingMap.put(Padding.OAEPWithSHA1AndMGF1Padding,"OAEPWithSHA-1AndMGF1Padding");
+		PaddingMap.put(Padding.OAEPWithSHA256AndMGF1Paddin,"OAEPWithSHA-256AndMGF1Padding");
+	}
+
+	public static boolean isSupport(final Algorithm alg ,final Mode mode, final Padding padding){
+		switch(alg){
+		case AES:
+			return isSupportAES(mode, padding);
+		case DES:
+			return isSupportDES(mode, padding);
+		case DESede:
+			return isSupportDESede(mode, padding);
+		case RSA:
+			return isSupportRSA(mode, padding);
+		}
+		return false;
+	}
+	public static int getBlockSize(final Algorithm alg){
+		switch(alg){
+		case AES:
+			return 128/8;
+		case DES:
+			return 64/8;
+		case DESede:
+			return 64/8;
+		case RSA:
+		default:
+		}
+		return -1;
+	}
+	private static boolean isSupportAES(Mode mode, Padding padding){
+		switch (padding){
+		case OAEPWithSHA1AndMGF1Padding:
+		case OAEPWithSHA256AndMGF1Paddin:
+			return false;
+		default:
+		}
+		return true;
+	}
+	private static boolean isSupportDES(Mode mode, Padding padding){
+		switch (padding){
+		case OAEPWithSHA1AndMGF1Padding:
+		case OAEPWithSHA256AndMGF1Paddin:
+			return false;
+		default:
+		}
+		return true;
+	}
+	private static boolean isSupportDESede(Mode mode, Padding padding){
+		switch (padding){
+		case OAEPWithSHA1AndMGF1Padding:
+		case OAEPWithSHA256AndMGF1Paddin:
+			return false;
+		default:
+		}
+		return true;
+	}
+	private static boolean isSupportRSA(Mode mode, Padding padding){
+		switch (mode){
+		case CBC:
+			return false;
+		default:
+		}
+		switch (padding){
+		case NoPadding:
+		case PKCS5Padding:
+		case PKCS7Padding:
+			return false;
+		default:
+		}
+		return true;
+	}
+	private static String makeIdententity(
+			final Algorithm alg ,
+			final Mode mode,
+			final Padding padding
+			)
+	{
+		final String Alg = AlgorithmMap.get(alg);
+		final String Mode = ModeMap.get(mode);
+		final String Padding = PaddingMap.get(padding);
+		return Alg + "/" + Mode + "/" + Padding;
+	}
+
+	public static byte[] decrypt(
+			final Algorithm alg,
+			final Mode mode,
+			final Padding padding,
+			final String encryptdata,
+			final String iv,
+			final String passphrase,
+			final int keyLength,
+			final String encode
+			) throws NoSuchAlgorithmException,
+			InvalidKeyException,
 			NoSuchPaddingException,
-			InvalidKeyException, 
 			InvalidAlgorithmParameterException,
-			IllegalBlockSizeException, 
+			IllegalBlockSizeException,
+			BadPaddingException,
+			UnsupportedEncodingException
+	{
+		byte[] decriptData = decrypt(
+			alg,
+			mode,
+			padding,
+			Base64.decode(encryptdata.getBytes(encode), Base64.DEFAULT),
+			iv.getBytes(encode),
+			passphrase.getBytes(encode),
+			keyLength);
+		return decriptData;
+	}
+
+	public static byte[] decrypt(
+			final Algorithm alg,
+			final Mode mode,
+			final Padding padding,
+			final byte[] encryptedData,
+			final byte[] iv,
+			final byte[] passphrase,
+			final int keyLength)
+		throws NoSuchAlgorithmException,
+			NoSuchPaddingException,
+			InvalidKeyException,
+			InvalidAlgorithmParameterException,
+			IllegalBlockSizeException,
 			BadPaddingException,
 			UnsupportedEncodingException {
 		Logger.start();
-		final String alg = "AES/CBC/PKCS7Padding";
-		Logger.debug(alg);
-		final Cipher cipher = Cipher.getInstance(alg);
-		final byte[] Iv = iv.getBytes("UTF-8");
-		final byte[] Key = passphrase.getBytes("UTF-8");
-		final IvParameterSpec ivSpec = 
+		if(!isSupport(alg, mode, padding)){
+			throw new NoSuchAlgorithmException();
+		}
+		String Alg = makeIdententity(alg ,mode, padding);
+		Logger.debug(Alg);
+		final Cipher cipher = Cipher.getInstance(Alg);
+		final IvParameterSpec ivSpec = mode != Mode.ECB ?
 				new IvParameterSpec(
-						Iv,
+						iv,
 						0,
-						16
-					);
-		final SecretKeySpec keySpec = 
+						getBlockSize(alg)
+					) : null
+				;
+		final SecretKeySpec keySpec =
 				new SecretKeySpec(
-						Key,
+						passphrase,
 						0,
-						32,
-						alg
+						keyLength,
+						Alg
 					);
 		cipher.init(
-				Cipher.DECRYPT_MODE, 
-				keySpec, 
+				Cipher.DECRYPT_MODE,
+				keySpec,
 				ivSpec
 			);
-		byte[] decode = Base64.decode(encryptedData.getBytes(), Base64.DEFAULT);
-		byte[] decript = cipher.doFinal(decode);
-		String decryptData = new String(decript,"UTF-8");
-		return decryptData;
+		byte[] decript = cipher.doFinal(encryptedData);
+		return decript;
 	}
 }
