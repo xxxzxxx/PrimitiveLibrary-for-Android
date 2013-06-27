@@ -10,18 +10,17 @@
 
 package com.primitive.library.service;
 
-import com.primitive.library.helper.Logger;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
+
+import com.primitive.library.helper.Logger;
 
 /**
  * Manifest.xml adding

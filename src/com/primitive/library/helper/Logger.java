@@ -1,6 +1,6 @@
 /**
  * Logger
- * 
+ *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
@@ -36,7 +36,7 @@ public class Logger {
 	}
 
 	private static Level LogLevel = BuildConfig.DEBUG == true
-			? Level.Trace 
+			? Level.Trace
 			: Level.Error;
 
 	public static void start() {
@@ -120,13 +120,13 @@ public class Logger {
 				Log.d(currentTack.getClassName(), obj != null ? obj.toString() : "obj is null");
 		}
 	}
-	
+
 	public static void heap() {
 		if(Level.comparison(LogLevel,Logger.Level.Debug) >= 0){
 			StackTraceElement currentTack = Thread.currentThread().getStackTrace()[3];
-			String msg = "heap : Free=" + Long.toString(Debug.getNativeHeapFreeSize() / 1024) + "kb" +   
-			"\n Allocated=" + Long.toString(Debug.getNativeHeapAllocatedSize() / 1024) + "kb" +   
-			"\n Size=" + Long.toString(Debug.getNativeHeapSize() / 1024) + "kb";  
+			String msg = "heap : Free=" + Long.toString(Debug.getNativeHeapFreeSize() / 1024) + "kb" +
+			"\n Allocated=" + Long.toString(Debug.getNativeHeapAllocatedSize() / 1024) + "kb" +
+			"\n Size=" + Long.toString(Debug.getNativeHeapSize() / 1024) + "kb";
 			if(currentTack != null)
 				Log.v(currentTack.getClassName(), msg);
 		 }
