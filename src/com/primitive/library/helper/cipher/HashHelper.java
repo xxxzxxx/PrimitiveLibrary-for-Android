@@ -21,6 +21,8 @@ import android.util.Base64;
 import com.primitive.library.helper.Logger;
 
 /**
+ * HashHelper
+ * 
  * @author xxx
  */
 public class HashHelper {
@@ -28,11 +30,10 @@ public class HashHelper {
 	 * @author xxx
 	 */
 	public enum Algorithm {
-		HmacMD5,
-		HmacSHA1,
-		HmacSHA256,
+		HmacMD5, HmacSHA1, HmacSHA256,
 	}
-	/**  */
+
+	/** AlgorithmMap */
 	private static final HashMap<Algorithm, String> AlgorithmMap;
 	static {
 		AlgorithmMap = new HashMap<Algorithm, String>();
@@ -42,7 +43,8 @@ public class HashHelper {
 	}
 
 	/**
-	 *
+	 * getHMACBase64
+	 * 
 	 * @param alg
 	 * @param message
 	 * @param passphrase
@@ -50,27 +52,27 @@ public class HashHelper {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static String getHMACBase64(
-			final Algorithm alg,
-			final String message,
-			final String passphrase,
-			final String encode)
-			throws UnsupportedEncodingException
-	{
+	public static String getHMACBase64(final Algorithm alg,
+			final String message, final String passphrase, final String encode)
+			throws UnsupportedEncodingException {
 		Logger.start();
-		byte[] rawHmac = getHMAC(alg,message.getBytes(encode),passphrase.getBytes(encode));
-		String signature = Base64.encodeToString(rawHmac, 0, rawHmac.length,Base64.DEFAULT);
+		byte[] rawHmac = getHMAC(alg, message.getBytes(encode),
+				passphrase.getBytes(encode));
+		String signature = Base64.encodeToString(rawHmac, 0, rawHmac.length,
+				Base64.DEFAULT);
 		return signature;
 	}
 
 	/**
-	 *
+	 * getHMAC
+	 * 
 	 * @param alg
 	 * @param message
 	 * @param passphrase
 	 * @return
 	 */
-	public static byte[] getHMAC(Algorithm alg,final byte[] message,final byte[] passphrase){
+	public static byte[] getHMAC(Algorithm alg, final byte[] message,
+			final byte[] passphrase) {
 		Logger.start();
 		String algorithm = AlgorithmMap.get(alg);
 		try {
