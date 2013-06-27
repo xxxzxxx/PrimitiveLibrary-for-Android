@@ -1,5 +1,5 @@
 /**
- * AbstractDataSource
+ * HashHelper
  *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
