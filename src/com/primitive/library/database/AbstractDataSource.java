@@ -1,6 +1,6 @@
 /**
  * AbstractDataSource
- * 
+ *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
@@ -14,16 +14,16 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 public abstract class AbstractDataSource {
-	private final Table[] tables;
+	protected final Table[] tables;
+	protected final OpenHelper openHelper;
 	protected final Context context;
+
 	public AbstractDataSource(final Context context,final Table[] tables){
 		this.context = context;
 		this.tables = tables;
+		openHelper = new OpenHelper(this);
 	}
 	public abstract String getDataBaseName();
 	public abstract int getDataBaseVersion();
 	public abstract CursorFactory getCursorFactory();
-	public Table[] getTables(){
-		return tables;
-	}
 }

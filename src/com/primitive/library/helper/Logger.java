@@ -23,7 +23,8 @@ public class Logger {
 		public static final Level Error = new Level(1);
 		public static final Level Warm  = new Level(2);
 		public static final Level Trace = new Level(3);
-		public static final Level Debug = new Level(4);
+		public static final Level info = new Level(5);
+		public static final Level Debug = new Level(6);
 		public static final Level All = new Level(100);
 		private int value;
 		Level(final int value){
@@ -51,6 +52,23 @@ public class Logger {
 			StackTraceElement currentTack = Thread.currentThread().getStackTrace()[3];
 			if(currentTack != null)
 				Log.i(currentTack.getClassName(), currentTack.getMethodName() + " end");
+		}
+	}
+
+	public static void info(Object obj) {
+		if(Level.comparison(LogLevel,Logger.Level.info) >= 0){
+			StackTraceElement currentTack = Thread.currentThread().getStackTrace()[3];
+			if(currentTack != null)
+				Log.i(currentTack.getClassName(), obj != null ? obj.toString() : "obj is null");
+		}
+	}
+
+	public static void info(String msg) {
+		if(Level.comparison(LogLevel,Logger.Level.info) >= 0){
+			StackTraceElement currentTack = Thread.currentThread().getStackTrace()[3];
+			if(currentTack != null){
+				Log.i(currentTack.getClassName(), msg);
+			}
 		}
 	}
 
