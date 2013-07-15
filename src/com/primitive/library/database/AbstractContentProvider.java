@@ -4,7 +4,7 @@
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
- * The MIT Licens (http://opensource.org/licenses/mit-license.php)
+ * The MIT License (http://opensource.org/licenses/mit-license.php)
  * GPL Version 2 licenses (http://www.gnu.org/licenses/gpl-2.0.html)
  */
 
@@ -21,10 +21,26 @@ import android.text.TextUtils;
 
 import com.primitive.library.helper.Logger;
 
-public abstract class AbstractContentProvider extends ContentProvider{
+/**
+ * AbstractContentProvider
+ * 
+ * <provider android:name="AbstractContentProvider"
+ * android:authorities="com.primitive.library.database" />
+ * 
+ * @author xxx
+ * 
+ */
+public abstract class AbstractContentProvider extends ContentProvider {
 	protected AbstractDataSource ds;
+
 	protected abstract AbstractDataSource createDataSource();
 
+	/**
+	 * getTableName
+	 * 
+	 * @param uri
+	 * @return
+	 */
 	private String getTableName(final Uri uri) {
 		final String[] paths = uri.getPath().split("/");
 		if (paths == null || paths.length < 2) {
@@ -34,7 +50,8 @@ public abstract class AbstractContentProvider extends ContentProvider{
 	}
 
 	/**
-	 * @see android.content.ContentProvider#delete(android.net.Uri, java.lang.String, java.lang.String[])
+	 * @see android.content.ContentProvider#delete(android.net.Uri,
+	 *      java.lang.String, java.lang.String[])
 	 */
 	@Override
 	public int delete(Uri uri, String where, String[] whereArgs) {
@@ -49,7 +66,8 @@ public abstract class AbstractContentProvider extends ContentProvider{
 	}
 
 	/**
-	 * @see android.content.ContentProvider#insert(android.net.Uri, android.content.ContentValues)
+	 * @see android.content.ContentProvider#insert(android.net.Uri,
+	 *      android.content.ContentValues)
 	 */
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
@@ -70,10 +88,13 @@ public abstract class AbstractContentProvider extends ContentProvider{
 	}
 
 	/**
-	 * @see android.content.ContentProvider#query(android.net.Uri, java.lang.String[], java.lang.String, java.lang.String[], java.lang.String)
+	 * @see android.content.ContentProvider#query(android.net.Uri,
+	 *      java.lang.String[], java.lang.String, java.lang.String[],
+	 *      java.lang.String)
 	 */
 	@Override
-	public Cursor query(Uri uri, String[] projection, String selection,String[] selectionArgs, String sortOrder) {
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
 		final SQLiteQueryBuilder sqliteQueryBuilder = new SQLiteQueryBuilder();
 		sqliteQueryBuilder.setTables(getTableName(uri));
 		String orderBy = null;
@@ -81,18 +102,22 @@ public abstract class AbstractContentProvider extends ContentProvider{
 			orderBy = sortOrder;
 		}
 		final SQLiteDatabase db = ds.openHelper.getReadableDatabase();
-		final Cursor c = sqliteQueryBuilder.query(db, projection, selection, selectionArgs, null, null, orderBy);
+		final Cursor c = sqliteQueryBuilder.query(db, projection, selection,
+				selectionArgs, null, null, orderBy);
 		c.setNotificationUri(getContext().getContentResolver(), uri);
 		return c;
 	}
 
 	/**
-	 * @see android.content.ContentProvider#update(android.net.Uri, android.content.ContentValues, java.lang.String, java.lang.String[])
+	 * @see android.content.ContentProvider#update(android.net.Uri,
+	 *      android.content.ContentValues, java.lang.String, java.lang.String[])
 	 */
 	@Override
-	public int update(Uri uri, ContentValues values, String where,String[] whereArgs) {
+	public int update(Uri uri, ContentValues values, String where,
+			String[] whereArgs) {
 		final SQLiteDatabase db = ds.openHelper.getWritableDatabase();
-		final int count = db.update(getTableName(uri), values, where, whereArgs);
+		final int count = db
+				.update(getTableName(uri), values, where, whereArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return count;
 	}

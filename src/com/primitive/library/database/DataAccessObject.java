@@ -4,7 +4,7 @@
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
- * The MIT Licens (http://opensource.org/licenses/mit-license.php)
+ * The MIT License (http://opensource.org/licenses/mit-license.php)
  * GPL Version 2 licenses (http://www.gnu.org/licenses/gpl-2.0.html)
  */
 
@@ -24,7 +24,8 @@ import com.primitive.library.helper.Logger;
  * @author xxx
  * @param <MDL>
  */
-public class DataAccessObject<MDL extends DataModel<?>> extends BaseDataAccessObject{
+public class DataAccessObject<MDL extends DataModel<?>> extends
+		BaseDataAccessObject {
 	/**
 	 *
 	 */
@@ -35,100 +36,103 @@ public class DataAccessObject<MDL extends DataModel<?>> extends BaseDataAccessOb
 	protected final Uri uri;
 
 	/**
-	 *
+	 * 
 	 * @param context
 	 * @param uri
 	 */
-	public DataAccessObject(Context context,final Uri uri){
+	public DataAccessObject(Context context, final Uri uri) {
 		Logger.start();
 		this.context = context;
 		this.uri = uri;
 	}
 
 	/**
-	 *
+	 * 
 	 * @param values
 	 * @return
 	 */
-	public Uri insert(final ContentValues values){
+	public Uri insert(final ContentValues values) {
 		Logger.start();
-		return DataAccessObject.insert(context,uri,values);
+		return DataAccessObject.insert(context, uri, values);
 	}
 
 	/**
-	 *
+	 * 
 	 * @param model
 	 * @return
 	 */
-	public Uri insert(final DataModel<?> model){
+	public Uri insert(final DataModel<?> model) {
 		Logger.start();
 		Logger.info(model.getClass().getSimpleName());
-		return DataAccessObject.insert(context,uri,model.changeContentValues());
+		return DataAccessObject.insert(context, uri,
+				model.changeContentValues());
 	}
 
 	/**
-	 *
+	 * 
 	 * @param values
 	 * @param id
 	 * @return
 	 */
-	public int update(final ContentValues values,final String id){
+	public int update(final ContentValues values, final String id) {
 		Logger.start();
-		return DataAccessObject.update(context,uri, values, id);
+		return DataAccessObject.update(context, uri, values, id);
 	}
 
 	/**
 	 * update target id recode
+	 * 
 	 * @param model
 	 * @param id
 	 * @return
 	 */
-	public int update(final DataModel<?> model,final String id){
+	public int update(final DataModel<?> model, final String id) {
 		Logger.start();
 		Logger.info(model.getClass().getSimpleName());
-		return DataAccessObject.update(context,uri, model.changeContentValues(), id);
+		return DataAccessObject.update(context, uri,
+				model.changeContentValues(), id);
 	}
 
 	/**
 	 * delete target id recode
+	 * 
 	 * @param id
 	 * @return
 	 */
-	public int delete(final String id){
+	public int delete(final String id) {
 		Logger.start();
-		return DataAccessObject.delete(context,uri,id);
+		return DataAccessObject.delete(context, uri, id);
 	}
 
 	/**
 	 * delete all recode
+	 * 
 	 * @return
 	 */
-	public int deleteAll(){
+	public int deleteAll() {
 		Logger.start();
-		return DataAccessObject.deleteAll(context,uri);
+		return DataAccessObject.deleteAll(context, uri);
 	}
 
 	/**
-	 *
+	 * 
 	 * @param context
 	 * @param whereQuery
 	 * @param whereValue
 	 * @param model
 	 * @return
 	 */
-	public DataModel<?>[] find(
-		final String whereQuery,
-		final String[] whereValue,
-		final DataModel<?> model
-	){
+	public DataModel<?>[] find(final String whereQuery,
+			final String[] whereValue, final DataModel<?> model) {
 		ArrayList<DataModel<?>> results = new ArrayList<DataModel<?>>();
-		Cursor cursor = DataAccessObject.find(context,uri, model.getProjectiuon(),whereQuery,whereValue);
-		try{
-			while(cursor.moveToNext()){
+		Cursor cursor = DataAccessObject.find(context, uri,
+				model.getProjectiuon(), whereQuery, whereValue);
+		try {
+			while (cursor.moveToNext()) {
 				results.add(model.changeModel(cursor));
 			}
-		}finally{
-			if(!cursor.isClosed()){
+		} finally {
+			if (!cursor.isClosed()) {
 				cursor.close();
 			}
 		}
@@ -137,20 +141,22 @@ public class DataAccessObject<MDL extends DataModel<?>> extends BaseDataAccessOb
 
 	/**
 	 * return all recode
+	 * 
 	 * @param model
 	 * @return
 	 */
-	public DataModel<?>[] findAll(final DataModel<?> model){
+	public DataModel<?>[] findAll(final DataModel<?> model) {
 		Logger.start();
 		Logger.info(model.getClass().getSimpleName());
-		Cursor cursor = DataAccessObject.find(context,uri, model.getProjectiuon(),null,null);
+		Cursor cursor = DataAccessObject.find(context, uri,
+				model.getProjectiuon(), null, null);
 		ArrayList<DataModel<?>> results = new ArrayList<DataModel<?>>();
-		try{
-			while(cursor.moveToNext()){
+		try {
+			while (cursor.moveToNext()) {
 				results.add(model.changeModel(cursor));
 			}
-		}finally{
-			if(!cursor.isClosed()){
+		} finally {
+			if (!cursor.isClosed()) {
 				cursor.close();
 			}
 		}
@@ -159,29 +165,26 @@ public class DataAccessObject<MDL extends DataModel<?>> extends BaseDataAccessOb
 
 	/**
 	 * findById
+	 * 
 	 * @param id
 	 * @param model
 	 * @return
 	 */
-	public DataModel<?> findById(final String id,final DataModel<?> model){
+	public DataModel<?> findById(final String id, final DataModel<?> model) {
 		Logger.start();
 		Logger.info(model.getClass().getSimpleName());
 
-		Cursor cursor = DataAccessObject.find(
-				context,
-				uri,
-				model.getProjectiuon(),
-				BaseColumns._ID+"=?",
-				new String[]{id}
-			);
+		Cursor cursor = DataAccessObject.find(context, uri,
+				model.getProjectiuon(), BaseColumns._ID + "=?",
+				new String[] { id });
 		DataModel<?> result = null;
 
-		try{
-			while(cursor.moveToNext()){
+		try {
+			while (cursor.moveToNext()) {
 				result = model.changeModel(cursor);
 			}
-		}finally{
-			if(!cursor.isClosed()){
+		} finally {
+			if (!cursor.isClosed()) {
 				cursor.close();
 			}
 		}

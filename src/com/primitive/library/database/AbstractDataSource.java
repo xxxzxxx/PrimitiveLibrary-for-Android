@@ -4,7 +4,7 @@
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
  * Copyright 2013, Primitive, inc.
- * The MIT Licens (http://opensource.org/licenses/mit-license.php)
+ * The MIT License (http://opensource.org/licenses/mit-license.php)
  * GPL Version 2 licenses (http://www.gnu.org/licenses/gpl-2.0.html)
  */
 
@@ -18,12 +18,15 @@ public abstract class AbstractDataSource {
 	protected final OpenHelper openHelper;
 	protected final Context context;
 
-	public AbstractDataSource(final Context context,final Table[] tables){
+	public AbstractDataSource(final Context context, final Table[] tables) {
 		this.context = context;
 		this.tables = tables;
 		openHelper = new OpenHelper(this);
 	}
+
 	public abstract String getDataBaseName();
+
 	public abstract int getDataBaseVersion();
+
 	public abstract CursorFactory getCursorFactory();
 }
