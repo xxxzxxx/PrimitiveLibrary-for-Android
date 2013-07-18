@@ -36,18 +36,19 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	protected final Uri uri;
 
 	/**
-	 * 
+	 *
 	 * @param context
 	 * @param uri
 	 */
 	public DataAccessObject(Context context, final Uri uri) {
-		Logger.start();
+		long start = Logger.start();
 		this.context = context;
 		this.uri = uri;
+		Logger.end(start);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param values
 	 * @return
 	 */
@@ -57,7 +58,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	}
 
 	/**
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -69,7 +70,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	}
 
 	/**
-	 * 
+	 *
 	 * @param values
 	 * @param id
 	 * @return
@@ -81,7 +82,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 
 	/**
 	 * update target id recode
-	 * 
+	 *
 	 * @param model
 	 * @param id
 	 * @return
@@ -95,7 +96,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 
 	/**
 	 * delete target id recode
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -106,7 +107,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 
 	/**
 	 * delete all recode
-	 * 
+	 *
 	 * @return
 	 */
 	public int deleteAll() {
@@ -115,7 +116,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	}
 
 	/**
-	 * 
+	 *
 	 * @param context
 	 * @param whereQuery
 	 * @param whereValue
@@ -124,6 +125,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	 */
 	public DataModel<?>[] find(final String whereQuery,
 			final String[] whereValue, final DataModel<?> model) {
+		long start = Logger.start();
 		ArrayList<DataModel<?>> results = new ArrayList<DataModel<?>>();
 		Cursor cursor = DataAccessObject.find(context, uri,
 				model.getProjectiuon(), whereQuery, whereValue);
@@ -136,17 +138,18 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 				cursor.close();
 			}
 		}
+		Logger.end(start);
 		return results.toArray(model.genericObjectArray());
 	}
 
 	/**
 	 * return all recode
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
 	public DataModel<?>[] findAll(final DataModel<?> model) {
-		Logger.start();
+		long start = Logger.start();
 		Logger.info(model.getClass().getSimpleName());
 		Cursor cursor = DataAccessObject.find(context, uri,
 				model.getProjectiuon(), null, null);
@@ -156,22 +159,23 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 				results.add(model.changeModel(cursor));
 			}
 		} finally {
-			if (!cursor.isClosed()) {
+			if (!cursor.isClosed() || cursor != null) {
 				cursor.close();
 			}
 		}
+		Logger.end(start);
 		return results.toArray(model.genericObjectArray());
 	}
 
 	/**
 	 * findById
-	 * 
+	 *
 	 * @param id
 	 * @param model
 	 * @return
 	 */
 	public DataModel<?> findById(final String id, final DataModel<?> model) {
-		Logger.start();
+		long start = Logger.start();
 		Logger.info(model.getClass().getSimpleName());
 
 		Cursor cursor = DataAccessObject.find(context, uri,
@@ -189,6 +193,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 			}
 		}
 
+		Logger.end(start);
 		return result;
 	}
 }

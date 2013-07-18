@@ -23,15 +23,15 @@ public abstract class Table {
 	private Column[] columns;
 
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @param columns
 	 */
 	protected Table(final String name, final Column[] columns) {
-		Logger.start();
+		long start = Logger.start();
 		this.name = name;
 		this.columns = columns;
-		Logger.end();
+		Logger.end(start);
 	}
 
 	public String getName() {
@@ -43,23 +43,25 @@ public abstract class Table {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] getProjectiuon() {
+		long start = Logger.start();
 		ArrayList<String> projection = new ArrayList<String>();
 		for (Column col : columns) {
 			projection.add(col.getName());
 		}
+		Logger.end(start);
 		return projection.toArray(new String[0]);
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String getCreateTableSQL() {
-		Logger.start();
+		long start = Logger.start();
 		StringBuilder sql = new StringBuilder();
 		sql.append("CREATE TABLE IF NOT EXISTS ");
 		sql.append(this.name);
@@ -70,15 +72,16 @@ public abstract class Table {
 				sql.append(",");
 			}
 			sql.append(column.getDefinitionSQL());
+			i++;
 		}
 		sql.append(");");
 		Logger.debug(sql);
-		Logger.end();
+		Logger.end(start);
 		return sql.toString();
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Column[] getColumns() {

@@ -10,23 +10,39 @@
 
 package com.primitive.library.database;
 
+import com.primitive.library.helper.Logger;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 public abstract class AbstractDataSource {
 	protected final Table[] tables;
-	protected final OpenHelper openHelper;
-	protected final Context context;
+	private final OpenHelper openHelper;
+	private final Context context;
 
 	public AbstractDataSource(final Context context, final Table[] tables) {
+		long start = Logger.start();
 		this.context = context;
 		this.tables = tables;
 		openHelper = new OpenHelper(this);
+		Logger.end(start);
+	}
+	public abstract String getDataBaseName();
+	public abstract int getDataBaseVersion();
+	public abstract CursorFactory getCursorFactory();
+	public OpenHelper getOpenHelper() {
+		Logger.start();
+		if(openHelper == null){
+			Logger.debug("openHelper is null");
+		}
+		return openHelper;
 	}
 
-	public abstract String getDataBaseName();
-
-	public abstract int getDataBaseVersion();
-
-	public abstract CursorFactory getCursorFactory();
+	public Context getContext() {
+		Logger.start();
+		if(context == null){
+			Logger.debug("context is null");
+		}
+		return context;
+	}
 }

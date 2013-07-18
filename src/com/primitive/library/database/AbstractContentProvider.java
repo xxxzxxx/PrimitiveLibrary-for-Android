@@ -23,29 +23,30 @@ import com.primitive.library.helper.Logger;
 
 /**
  * AbstractContentProvider
- * 
+ *
  * <provider android:name="AbstractContentProvider"
  * android:authorities="com.primitive.library.database" />
- * 
+ *
  * @author xxx
- * 
+ *
  */
 public abstract class AbstractContentProvider extends ContentProvider {
-	protected AbstractDataSource ds;
-
+	protected AbstractDataSource ds = null;
 	protected abstract AbstractDataSource createDataSource();
 
-	/**
+	 /**
 	 * getTableName
-	 * 
+	 *
 	 * @param uri
 	 * @return
 	 */
 	private String getTableName(final Uri uri) {
+		long start = Logger.start();
 		final String[] paths = uri.getPath().split("/");
 		if (paths == null || paths.length < 2) {
 			return null;
 		}
+		Logger.end(start);
 		return paths[1];
 	}
 
@@ -55,13 +56,13 @@ public abstract class AbstractContentProvider extends ContentProvider {
 	 */
 	@Override
 	public int delete(Uri uri, String where, String[] whereArgs) {
-		Logger.start();
-		final SQLiteDatabase db = ds.openHelper.getWritableDatabase();
+		long start = Logger.start();
+		final SQLiteDatabase db = this.ds.getOpenHelper().getWritableDatabase();
 		final String tableName = getTableName(uri);
 		Logger.debug(tableName);
 		final int count = db.delete(tableName, where, whereArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
-		Logger.end();
+		Logger.end(start);
 		return count;
 	}
 
@@ -71,10 +72,12 @@ public abstract class AbstractContentProvider extends ContentProvider {
 	 */
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		final SQLiteDatabase db = ds.openHelper.getWritableDatabase();
+		long start = Logger.start();
+		final SQLiteDatabase db = this.ds.getOpenHelper().getWritableDatabase();
 		final long id = db.insert(getTableName(uri), null, values);
 		final Uri newUri = ContentUris.withAppendedId(uri, id);
 		getContext().getContentResolver().notifyChange(newUri, null);
+		Logger.end(start);
 		return newUri;
 	}
 
@@ -83,8 +86,10 @@ public abstract class AbstractContentProvider extends ContentProvider {
 	 */
 	@Override
 	public boolean onCreate() {
-		ds = createDataSource();
-		return true;
+		long start = Logger.start();
+		this.ds = createDataSource();
+		Logger.end(start);
+		return this.ds != null;
 	}
 
 	/**
@@ -95,16 +100,18 @@ public abstract class AbstractContentProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
+		long start = Logger.start();
 		final SQLiteQueryBuilder sqliteQueryBuilder = new SQLiteQueryBuilder();
 		sqliteQueryBuilder.setTables(getTableName(uri));
 		String orderBy = null;
 		if (!TextUtils.isEmpty(sortOrder)) {
 			orderBy = sortOrder;
 		}
-		final SQLiteDatabase db = ds.openHelper.getReadableDatabase();
+		final SQLiteDatabase db = this.ds.getOpenHelper().getReadableDatabase();
 		final Cursor c = sqliteQueryBuilder.query(db, projection, selection,
 				selectionArgs, null, null, orderBy);
 		c.setNotificationUri(getContext().getContentResolver(), uri);
+		Logger.end(start);
 		return c;
 	}
 
@@ -115,10 +122,12 @@ public abstract class AbstractContentProvider extends ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues values, String where,
 			String[] whereArgs) {
-		final SQLiteDatabase db = ds.openHelper.getWritableDatabase();
+		long start = Logger.start();
+		final SQLiteDatabase db = this.ds.getOpenHelper().getWritableDatabase();
 		final int count = db
 				.update(getTableName(uri), values, where, whereArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
+		Logger.end(start);
 		return count;
 	}
 }

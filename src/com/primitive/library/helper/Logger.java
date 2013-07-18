@@ -19,6 +19,12 @@ import com.primitive.library.BuildConfig;
  */
 public class Logger {
 	public static class Level {
+		public enum Comparison{
+			Greater,
+			Less,
+			Equal,
+		};
+		public static final Comparison ComparisonMode = Comparison.Less;
 		public static final Level Nothing = new Level(0);
 		public static final Level Performance = new Level(10);
 		public static final Level Error = new Level(20);
@@ -29,43 +35,77 @@ public class Logger {
 		public static final Level All = new Level(100);
 		private int value;
 
-		Level(final int value) {
+		private Level(final int value) {
 			this.value = value;
 		}
 
 		public static int comparison(Level compare, Level base) {
-			return (compare.value - base.value);
+			int result = 0;
+			if (ComparisonMode == Comparison.Greater){
+				result = (compare.value <= base.value) ? 0 : -1;
+			}else if(ComparisonMode == Comparison.Less){
+				result = (compare.value >= base.value) ? 0 : -1;
+			}else if(ComparisonMode == Comparison.Equal){
+				result = (compare.value == base.value) ? 0 : -1;
+			}
+			return result;
+		}
+		public int comparison(Level base) {
+			int result = 0;
+			if (ComparisonMode == Comparison.Greater){
+				result = (this.value <= base.value) ? 0 : -1;
+			}else if(ComparisonMode == Comparison.Less){
+				result = (this.value >= base.value) ? 0 : -1;
+			}else if(ComparisonMode == Comparison.Equal){
+				result = (this.value == base.value) ? 0 : -1;
+			}
+			return result;
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private static Level LogLevel =
-			BuildConfig.DEBUG == true
-				? Level.Trace
+			BuildConfig.DEBUG
+				? Level.All
 				: Level.Error;
 
-	public static void start() {
-		if (Level.comparison(LogLevel, Logger.Level.Trace) >= 0) {
+	public static long start() {
+		long started =  System.currentTimeMillis();
+		if (LogLevel.comparison(Logger.Level.Trace) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
 				Log.i(currentTack.getClassName(), currentTack.getMethodName()
 						+ " start");
 		}
+		return started;
 	}
 
-	public static void end() {
-		if (Level.comparison(LogLevel, Logger.Level.Trace) >= 0) {
+	public static long end() {
+		long end =  System.currentTimeMillis();
+		if (LogLevel.comparison( Logger.Level.Trace) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
 				Log.i(currentTack.getClassName(), currentTack.getMethodName()
 						+ " end");
 		}
+		return end;
+	}
+
+	public static long end(final long started) {
+		long end =  System.currentTimeMillis();
+		if (LogLevel.comparison( Logger.Level.Trace) >= 0) {
+			StackTraceElement currentTack = Thread.currentThread()
+					.getStackTrace()[3];
+			if (currentTack != null)
+				Log.i(currentTack.getClassName(), currentTack.getMethodName()
+						+ " end["+ (end - started) +"ms]");
+		}
+		return end;
 	}
 
 	public static void info(Object obj) {
-		if (Level.comparison(LogLevel, Logger.Level.Info) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Info) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
@@ -75,7 +115,7 @@ public class Logger {
 	}
 
 	public static void info(String msg) {
-		if (Level.comparison(LogLevel, Logger.Level.Info) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Info) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null) {
@@ -85,7 +125,7 @@ public class Logger {
 	}
 
 	public static void err(Throwable ex) {
-		if (Level.comparison(LogLevel, Logger.Level.Error) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Error) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
@@ -94,7 +134,7 @@ public class Logger {
 	}
 
 	public static void warm(String msg) {
-		if (Level.comparison(LogLevel, Logger.Level.Warm) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Warm) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
@@ -103,7 +143,7 @@ public class Logger {
 	}
 
 	public static void warm(Throwable ex) {
-		if (Level.comparison(LogLevel, Logger.Level.Warm) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Warm) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
@@ -112,17 +152,17 @@ public class Logger {
 	}
 
 	public static void debug(String msg) {
-		if (Level.comparison(LogLevel, Logger.Level.Debug) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Debug) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null) {
-				Log.d(currentTack.getClassName(), msg);
+				Log.d(currentTack.getClassName(), msg != null ? msg : "empty strings");
 			}
 		}
 	}
 
 	public static void debug(long l) {
-		if (Level.comparison(LogLevel, Logger.Level.Debug) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Debug) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
@@ -131,7 +171,7 @@ public class Logger {
 	}
 
 	public static void debug(Object obj) {
-		if (Level.comparison(LogLevel, Logger.Level.Debug) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Debug) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
@@ -141,7 +181,7 @@ public class Logger {
 	}
 	public static void times(final long started) {
 		final long endl = System.currentTimeMillis();
-		if (Level.comparison(LogLevel, Logger.Level.Performance) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Performance) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null) {
@@ -151,7 +191,7 @@ public class Logger {
 		}
 	}
 	public static void times(final long started,final long endl) {
-		if (Level.comparison(LogLevel, Logger.Level.Performance) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Performance) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null) {
@@ -162,7 +202,7 @@ public class Logger {
 	}
 
 	public static void heap() {
-		if (Level.comparison(LogLevel, Logger.Level.Debug) >= 0) {
+		if (LogLevel.comparison( Logger.Level.Performance) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			String msg = "heap : Free="
