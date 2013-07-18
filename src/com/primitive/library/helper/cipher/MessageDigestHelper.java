@@ -17,7 +17,7 @@ import android.util.Base64;
 
 /**
  * MessageDigestHelper
- * 
+ *
  * @author xxx
  */
 public class MessageDigestHelper {
@@ -43,13 +43,13 @@ public class MessageDigestHelper {
 
 	/**
 	 * getDigestBase64
-	 * 
+	 *
 	 * @param algorithm
 	 * @param message
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
-	public static String getDigestBase64(Algorithm algorithm, byte[] message)
+	public static String getDigestBase64(final Algorithm algorithm, final byte[] message)
 			throws NoSuchAlgorithmException {
 		byte[] digest = getDigest(algorithm, message);
 		String encode = Base64.encodeToString(digest, Base64.DEFAULT);
@@ -58,13 +58,13 @@ public class MessageDigestHelper {
 
 	/**
 	 * getDigest
-	 * 
+	 *
 	 * @param algorithm
 	 * @param message
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
-	public static byte[] getDigest(Algorithm algorithm, byte[] message)
+	public static byte[] getDigest(final Algorithm algorithm, final byte[] message)
 			throws NoSuchAlgorithmException {
 		String algorithm_id = AlgorithmMap.get(algorithm);
 		MessageDigest md = MessageDigest.getInstance(algorithm_id);

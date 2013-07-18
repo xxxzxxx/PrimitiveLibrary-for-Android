@@ -1,5 +1,5 @@
 /**
- * HashHelper
+ * HashMacHelper
  *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
@@ -21,11 +21,11 @@ import android.util.Base64;
 import com.primitive.library.helper.Logger;
 
 /**
- * HashHelper
- * 
+ * HashMacHelper
+ *
  * @author xxx
  */
-public class HashHelper {
+public class HashMacHelper {
 	/**
 	 * @author xxx
 	 */
@@ -44,7 +44,7 @@ public class HashHelper {
 
 	/**
 	 * getHMACBase64
-	 * 
+	 *
 	 * @param alg
 	 * @param message
 	 * @param passphrase
@@ -65,7 +65,7 @@ public class HashHelper {
 
 	/**
 	 * getHMAC
-	 * 
+	 *
 	 * @param alg
 	 * @param message
 	 * @param passphrase
