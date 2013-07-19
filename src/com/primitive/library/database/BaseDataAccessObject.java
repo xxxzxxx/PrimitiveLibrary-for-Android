@@ -9,13 +9,13 @@
  */
 package com.primitive.library.database;
 
-import com.primitive.library.helper.Logger;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+
+import com.primitive.library.helper.Logger;
 
 public class BaseDataAccessObject {
 	/**

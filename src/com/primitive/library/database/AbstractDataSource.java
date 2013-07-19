@@ -10,10 +10,10 @@
 
 package com.primitive.library.database;
 
-import com.primitive.library.helper.Logger;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+
+import com.primitive.library.helper.Logger;
 
 public abstract class AbstractDataSource {
 	protected final Table[] tables;

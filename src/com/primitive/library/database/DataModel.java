@@ -13,6 +13,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 public interface DataModel<T> {
+	public void setId(final String id);
+
 	public String getId();
 
 	public String[] getProjectiuon();

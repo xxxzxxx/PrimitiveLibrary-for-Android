@@ -9,10 +9,10 @@
  */
 package com.primitive.library.database;
 
-import com.primitive.library.helper.Logger;
-
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.primitive.library.helper.Logger;
 
 public class OpenHelper extends SQLiteOpenHelper {
 	private final AbstractDataSource datasource;
