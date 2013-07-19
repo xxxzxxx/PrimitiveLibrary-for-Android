@@ -10,9 +10,6 @@
 package com.primitive.library.helper.varidate;
 
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -21,8 +18,6 @@ import com.primitive.library.exception.Exception;
 import com.primitive.library.exception.ObjectSettingException;
 import com.primitive.library.helper.Logger;
 import com.primitive.library.helper.cipher.Digest;
-import com.primitive.library.helper.cipher.MessageDigestHelper;
-import com.primitive.library.helper.cipher.MessageDigestHelper.Algorithm;
 import com.primitive.library.helper.varidate.exception.VaridatorException;
 
 public class StreamVaridator implements Closeable,Varidator{
@@ -32,6 +27,14 @@ public class StreamVaridator implements Closeable,Varidator{
 	private String digestValue;
 	/**  */
 	private InputStream inputStream;
+	/** finalize Guardian */
+	@SuppressWarnings("unused")
+	private final Object finalizeGuardian = new Object(){
+		protected void finalize() throws Throwable {
+			StreamVaridator.this.close();
+		}
+	};
+
 	/**
 	 *
 	 * @param target

@@ -12,12 +12,9 @@ package com.primitive.library.helper.varidate;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-import com.primitive.library.exception.Exception;
 import com.primitive.library.exception.ObjectSettingException;
 import com.primitive.library.helper.Logger;
 import com.primitive.library.helper.cipher.Digest;
-import com.primitive.library.helper.cipher.MessageDigestHelper;
-import com.primitive.library.helper.cipher.MessageDigestHelper.Algorithm;
 import com.primitive.library.helper.varidate.exception.VaridatorException;
 
 public class StringVaridator implements Varidator{
