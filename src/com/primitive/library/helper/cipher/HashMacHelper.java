@@ -48,18 +48,14 @@ public class HashMacHelper {
 	 * @param alg
 	 * @param message
 	 * @param passphrase
-	 * @param encode
 	 * @return
-	 * @throws UnsupportedEncodingException
 	 */
 	public static String getHMACBase64(final Algorithm alg,
-			final String message, final String passphrase, final String encode)
-			throws UnsupportedEncodingException {
-		Logger.start();
-		byte[] rawHmac = getHMAC(alg, message.getBytes(encode),
-				passphrase.getBytes(encode));
-		String signature = Base64.encodeToString(rawHmac, 0, rawHmac.length,
-				Base64.DEFAULT);
+			final byte[] message, final byte[] passphrase) {
+		long start = Logger.start();
+		byte[] rawHmac = getHMAC(alg, message,passphrase);
+		String signature = Base64.encodeToString(rawHmac, 0, rawHmac.length,Base64.DEFAULT);
+		Logger.end(start);
 		return signature;
 	}
 
@@ -73,7 +69,7 @@ public class HashMacHelper {
 	 */
 	public static byte[] getHMAC(Algorithm alg, final byte[] message,
 			final byte[] passphrase) {
-		Logger.start();
+		long start = Logger.start();
 		String algorithm = AlgorithmMap.get(alg);
 		try {
 			final byte[] secretyKeyBytes = passphrase;
@@ -83,6 +79,7 @@ public class HashMacHelper {
 			mac.init(secretKeySpec);
 			final byte[] data = message;
 			final byte[] rawHmac = mac.doFinal(data);
+			Logger.end(start);
 			return rawHmac;
 		} catch (final Exception e) {
 			throw new RuntimeException(e);

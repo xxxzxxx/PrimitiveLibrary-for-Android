@@ -11,6 +11,7 @@
 package com.primitive.library.helper.cipher;
 
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 import com.primitive.library.helper.cipher.HashMacHelper.Algorithm;
 
@@ -18,35 +19,23 @@ import com.primitive.library.helper.cipher.HashMacHelper.Algorithm;
  * HashMac
  * @author xxx
  */
-public class HashMac {
+public class HashMac implements Digest{
 	final Algorithm algorithm;
+	final byte[] passphrase;
 
-	public HashMac(final Algorithm algorithm){
+	public HashMac(final Algorithm algorithm,final byte[] passphrase){
 		this.algorithm = algorithm;
+		this.passphrase = passphrase;
 	}
 
-	public String getHMACBase64(
-			final String message,
-			final String passphrase,
-			final String encode
-		) throws UnsupportedEncodingException
+	@Override
+	public String getDigestBase64(final byte[] message)
 	{
-		return HashMacHelper.getHMACBase64(algorithm, message, passphrase,encode);
+		return HashMacHelper.getHMACBase64(algorithm, message, passphrase);
 	}
 
-	/**
-	 * getHMAC
-	 *
-	 * @param alg
-	 * @param message
-	 * @param passphrase
-	 * @return
-	 */
-	public byte[] getHMAC(
-			final byte[] message,
-			final byte[] passphrase)
-	{
+	@Override
+	public byte[] getDigest(byte[] message) throws NoSuchAlgorithmException {
 		return HashMacHelper.getHMAC(algorithm, message, passphrase);
 	}
-
 }
