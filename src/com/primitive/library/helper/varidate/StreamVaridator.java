@@ -9,6 +9,7 @@
  */
 package com.primitive.library.helper.varidate;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,49 +20,28 @@ import java.security.NoSuchAlgorithmException;
 import com.primitive.library.exception.Exception;
 import com.primitive.library.exception.ObjectSettingException;
 import com.primitive.library.helper.Logger;
+import com.primitive.library.helper.cipher.Digest;
 import com.primitive.library.helper.cipher.MessageDigestHelper;
 import com.primitive.library.helper.cipher.MessageDigestHelper.Algorithm;
+import com.primitive.library.helper.varidate.exception.VaridatorException;
 
-public class FileVaridator {
-	/**  */
-	private Algorithm algorithm;
-	/**  */
-	private String digest;
+public class StreamVaridator implements Closeable,Varidator{
+	/**  Digest */
+	private final Digest digest;
+	/**  Digest value  */
+	private String digestValue;
 	/**  */
 	private InputStream inputStream;
-
-	/**
-	 *
-	 */
-	public FileVaridator() {
-	}
-
-	/**
-	 *
-	 * @param filePath
-	 * @param digest
-	 * @param algorithm
-	 * @throws FileNotFoundException
-	 */
-	public FileVaridator(final String filePath, final String digest,
-			final Algorithm algorithm) throws FileNotFoundException {
-		File file = new File(filePath);
-		this.inputStream = new FileInputStream(file);
-		this.digest = digest;
-		this.algorithm = algorithm;
-	}
-
 	/**
 	 *
 	 * @param target
-	 * @param digest
+	 * @param digestValue
 	 * @param algorithm
 	 */
-	public FileVaridator(final InputStream inputStream, final String digest,
-			final Algorithm algorithm) {
+	public StreamVaridator(final InputStream inputStream, final String digestValue,final Digest digest) {
 		this.inputStream = inputStream;
+		this.digestValue = digestValue;
 		this.digest = digest;
-		this.algorithm = algorithm;
 	}
 
 	/**
@@ -70,7 +50,10 @@ public class FileVaridator {
 	 * @throws ObjectSettingException
 	 */
 	private void check() throws ObjectSettingException {
-		if (digest == null || inputStream == null) {
+		if (inputStream == null) {
+			throw new ObjectSettingException("Parameter setup has a defect. ");
+		}
+		if (digestValue == null ) {
 			throw new ObjectSettingException("Parameter setup has a defect. ");
 		}
 	}
@@ -79,51 +62,35 @@ public class FileVaridator {
 	 *
 	 *
 	 * @return
+	 * @throws ObjectSettingException
 	 * @throws Exception
 	 */
-	public boolean compare() throws Exception {
+	public boolean compare() throws VaridatorException, ObjectSettingException {
 		check();
 		boolean result = false;
 		try {
 			int size = inputStream.available();
 			byte[] data = new byte[size];
 			if (0 != inputStream.read(data, 0, size)) {
-				String digestData = MessageDigestHelper.getDigestBase64(
-						algorithm, data);
-				result = digestData.equals(digest);
+				String digestData = digest.getDigestBase64(data);
+				result = digestData.equals(digestValue);
 			}
 		} catch (NoSuchAlgorithmException ex) {
 			Logger.err(ex);
-			throw new Exception(ex);
+			throw new VaridatorException(ex);
 		} catch (IOException ex) {
 			Logger.err(ex);
-			throw new Exception(ex);
+			throw new VaridatorException(ex);
 		}
 		return result;
 	}
 
-	public Algorithm getAlgorithm() {
-		return algorithm;
+	public String getDigestValue() {
+		return digestValue;
 	}
 
-	public void setAlgorithm(Algorithm algorithm) {
-		this.algorithm = algorithm;
-	}
-
-	public String getDigest() {
-		return digest;
-	}
-
-	public void setDigest(String digest) {
-		this.digest = digest;
-	}
-
-	public InputStream getInputStream() {
-		return inputStream;
-	}
-
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
+	public void setDigestValue(String digest) {
+		this.digestValue = digest;
 	}
 
 	public void close() {

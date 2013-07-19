@@ -15,33 +15,34 @@ import java.security.NoSuchAlgorithmException;
 import com.primitive.library.exception.Exception;
 import com.primitive.library.exception.ObjectSettingException;
 import com.primitive.library.helper.Logger;
+import com.primitive.library.helper.cipher.Digest;
 import com.primitive.library.helper.cipher.MessageDigestHelper;
 import com.primitive.library.helper.cipher.MessageDigestHelper.Algorithm;
+import com.primitive.library.helper.varidate.exception.VaridatorException;
 
-public class StringVaridator {
-	Algorithm algorithm;
-	String original;
-	String encode;
-	String digest;
-
-	/**
-	 *
-	 */
-	public StringVaridator() {
-	}
+public class StringVaridator implements Varidator{
+	/**  Digest */
+	private final Digest digest;
+	private final String original;
+	private final String encode;
+	private final String digestValue;
 
 	/**
 	 *
-	 * @param data
+	 * @param original
 	 * @param digest
 	 * @param encode
 	 * @param algorithm
 	 */
-	public StringVaridator(final String data, final String digest,
-			final String encode, final Algorithm algorithm) {
-		this.original = data;
+	public StringVaridator(
+			final String original,
+			final String digestBase64,
+			final String encode,
+			final Digest digest)
+	{
+		this.original = original;
+		this.digestValue = digestBase64;
 		this.digest = digest;
-		this.algorithm = algorithm;
 		this.encode = encode;
 	}
 
@@ -49,8 +50,10 @@ public class StringVaridator {
 	 *
 	 * @throws ObjectSettingException
 	 */
-	private void check() throws ObjectSettingException {
-		Object[] compares = new Object[] { original, digest, algorithm, encode, };
+	private void check()
+		throws ObjectSettingException
+	{
+		Object[] compares = new Object[] { original, digest, digestValue, encode, };
 		for (Object obj : compares) {
 			if (obj == null) {
 				throw new ObjectSettingException(
@@ -59,25 +62,21 @@ public class StringVaridator {
 		}
 	}
 
-	/**
-	 *
-	 * @return
-	 * @throws Exception
-	 */
-	public boolean compare() throws Exception {
+	@Override
+	public boolean compare() throws VaridatorException, ObjectSettingException
+	{
 		check();
 		boolean result = false;
 		try {
 			byte[] data = original.getBytes(encode);
-			String digestData = MessageDigestHelper.getDigestBase64(algorithm,
-					data);
-			result = digestData.equals(digest);
+			String digestData = digest.getDigestBase64(data);
+			result = digestData.equals(digestValue);
 		} catch (NoSuchAlgorithmException ex) {
 			Logger.err(ex);
-			throw new Exception(ex);
+			throw new VaridatorException(ex);
 		} catch (UnsupportedEncodingException ex) {
 			Logger.err(ex);
-			throw new Exception(ex);
+			throw new VaridatorException(ex);
 		}
 		return result;
 	}
