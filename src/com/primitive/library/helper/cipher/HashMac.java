@@ -10,7 +10,6 @@
 
 package com.primitive.library.helper.cipher;
 
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 import com.primitive.library.helper.cipher.HashMacHelper.Algorithm;

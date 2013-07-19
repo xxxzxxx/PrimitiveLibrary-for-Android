@@ -10,7 +10,6 @@
 
 package com.primitive.library.helper.cipher;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 import javax.crypto.Mac;
