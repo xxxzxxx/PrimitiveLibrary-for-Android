@@ -29,18 +29,22 @@ import android.os.AsyncTask;
 
 import com.primitive.library.helper.Logger;
 
+/**
+ * @author xxx
+ */
 public class DownloadTask extends AsyncTask<Void, Integer, String> {
 
+	/**
+	 * @author xxx
+	 */
 	public interface DownloadCallback {
 		void onFailue();
-
 		void onSucess();
 	}
 
 	private final DownloadCallback callback;
 	private String hashValue;
 	private ProgressDialog progress = null;
-
 	private final String savePath;
 	private final String fileName;
 	private final Activity owner;
@@ -49,6 +53,14 @@ public class DownloadTask extends AsyncTask<Void, Integer, String> {
 	private long timeout = 10000;
 	private int buffer_size = 1024 * 16;
 
+	/**
+	 *
+	 * @param request
+	 * @param savePath
+	 * @param fileName
+	 * @param owner
+	 * @param callback
+	 */
 	public DownloadTask(final HttpRequestBase request, final String savePath,
 			final String fileName, final Activity owner,
 			final DownloadCallback callback) {

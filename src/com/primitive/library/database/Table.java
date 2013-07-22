@@ -1,5 +1,5 @@
 /**
- * Table
+] * Table
  *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
@@ -54,6 +54,28 @@ public abstract class Table {
 		}
 		Logger.end(start);
 		return projection.toArray(new String[0]);
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public String getPrimaryKeyQuery() {
+		long start = Logger.start();
+		StringBuilder sql = new StringBuilder();
+		int i = 0;
+		for (Column col : columns) {
+			if(col.isPrimaryKey()){
+				if(i > 0){
+					sql.append("AND ");
+				}
+				sql.append(col.getName());
+				sql.append("=?");
+				i++;
+			}
+		}
+		Logger.end(start);
+		return sql.toString();
 	}
 
 	/**

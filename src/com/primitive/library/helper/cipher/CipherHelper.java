@@ -25,6 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 import android.util.Base64;
 
 import com.primitive.library.helper.Logger;
+import com.primitive.library.helper.cipher.exception.CipherException;
 
 /**
  * CipherHelper
@@ -58,7 +59,12 @@ public class CipherHelper {
 	 *
 	 */
 	public enum Padding {
-		NoPadding, PKCS1Padding, PKCS5Padding, PKCS7Padding, OAEPWithSHA1AndMGF1Padding, OAEPWithSHA256AndMGF1Paddin,
+		NoPadding,
+		PKCS1Padding,
+		PKCS5Padding,
+		PKCS7Padding,
+		OAEPWithSHA1AndMGF1Padding,
+		OAEPWithSHA256AndMGF1Paddin,
 	}
 
 	/** AlgorithmMap */
@@ -205,112 +211,63 @@ public class CipherHelper {
 	 * @param padding
 	 * @return
 	 */
-	private static String makeIdententity(final Algorithm alg, final Mode mode,
-			final Padding padding) {
+	private static String makeIdententity(
+			final Algorithm alg,
+			final Mode mode,
+			final Padding padding)
+	{
 		final String Alg = AlgorithmMap.get(alg);
 		final String Mode = ModeMap.get(mode);
 		final String Padding = PaddingMap.get(padding);
 		return Alg + "/" + Mode + "/" + Padding;
 	}
 
-	/**
-	 *
-	 * @param alg
-	 * @param mode
-	 * @param padding
-	 * @param base64EncryptData
-	 * @param iv
-	 * @param passphrase
-	 * @param keyLength
-	 * @param encode
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws InvalidKeyException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 * @throws UnsupportedEncodingException
-	 */
-	public static byte[] encrypt(final Algorithm alg, final Mode mode,
-			final Padding padding, final String base64EncryptData, final String iv,
-			final String passphrase, final int keyLength, final String encode)
-			throws NoSuchAlgorithmException, InvalidKeyException,
-			NoSuchPaddingException, InvalidAlgorithmParameterException,
-			IllegalBlockSizeException, BadPaddingException,
-			UnsupportedEncodingException {
+	public static byte[] encrypt(
+			final Algorithm alg,
+			final Mode mode,
+			final Padding padding,
+			final String base64EncryptData,
+			final String iv,
+			final String passphrase,
+			final int keyLength,
+			final String encode) throws CipherException, UnsupportedEncodingException
+	{
 		byte[] decriptData = crypt(CipherMode.Encrypt,
 				alg,
 				mode,
 				padding,Base64.decode(base64EncryptData.getBytes(encode), Base64.DEFAULT),
 				iv.getBytes(encode),
-				passphrase.getBytes(encode),
-				keyLength);
+				passphrase.getBytes(encode));
 		return decriptData;
 	}
 
-	/**
-	 *
-	 * @param alg
-	 * @param mode
-	 * @param padding
-	 * @param encryptedData
-	 * @param iv
-	 * @param passphrase
-	 * @param keyLength
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidKeyException
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 * @throws UnsupportedEncodingException
-	 */
-	public static byte[] encrypt(final Algorithm alg, final Mode mode,
-			final Padding padding, final byte[] encryptedData, final byte[] iv,
-			final byte[] passphrase, final int keyLength)
-			throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException,
-			IllegalBlockSizeException, BadPaddingException,
-			UnsupportedEncodingException {
-		return  crypt(CipherMode.Encrypt,alg, mode,padding, encryptedData, iv,passphrase, keyLength);
+	public static byte[] encrypt(
+			final Algorithm alg,
+			final Mode mode,
+			final Padding padding,
+			final byte[] encryptedData,
+			final byte[] iv,
+			final byte[] passphrase) throws CipherException
+	{
+		return  crypt(CipherMode.Encrypt,alg, mode,padding, encryptedData, iv,passphrase);
 	}
 
-	/**
-	 *
-	 * @param alg
-	 * @param mode
-	 * @param padding
-	 * @param base64EncryptData
-	 * @param iv
-	 * @param passphrase
-	 * @param keyLength
-	 * @param encode
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws InvalidKeyException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 * @throws UnsupportedEncodingException
-	 */
-	public static byte[] decrypt(final Algorithm alg, final Mode mode,
-			final Padding padding, final String base64EncryptData, final String iv,
-			final String passphrase, final int keyLength, final String encode)
-			throws NoSuchAlgorithmException, InvalidKeyException,
-			NoSuchPaddingException, InvalidAlgorithmParameterException,
-			IllegalBlockSizeException, BadPaddingException,
-			UnsupportedEncodingException {
+	public static byte[] decrypt(
+			final Algorithm alg,
+			final Mode mode,
+			final Padding padding,
+			final String base64EncryptData,
+			final String iv,
+			final String passphrase,
+			final String encode) throws UnsupportedEncodingException, CipherException
+	{
 		byte[] decriptData = crypt(CipherMode.Decrypt,
 				alg,
 				mode,
 				padding,
 				Base64.decode(base64EncryptData.getBytes(encode), Base64.DEFAULT),
 				iv != null ? iv.getBytes(encode) : null,
-				passphrase.getBytes(encode),
-				keyLength);
+				passphrase.getBytes(encode));
 		return decriptData;
 	}
 
@@ -322,71 +279,67 @@ public class CipherHelper {
 	 * @param encryptedData
 	 * @param iv
 	 * @param passphrase
-	 * @param keyLength
 	 * @return
 	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidKeyException
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 * @throws UnsupportedEncodingException
+	 * @throws CipherException
 	 */
-	public static byte[] decrypt(final Algorithm alg, final Mode mode,
-			final Padding padding, final byte[] encryptedData, final byte[] iv,
-			final byte[] passphrase, final int keyLength)
-			throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException,
-			IllegalBlockSizeException, BadPaddingException,
-			UnsupportedEncodingException {
-		return  crypt(CipherMode.Decrypt,alg, mode,padding, encryptedData, iv,passphrase, keyLength);
+	public static byte[] decrypt(
+			final Algorithm alg,
+			final Mode mode,
+			final Padding padding,
+			final byte[] encryptedData,
+			final byte[] iv,
+			final byte[] passphrase)
+			throws CipherException
+	{
+		return  crypt(CipherMode.Decrypt,alg, mode,padding, encryptedData, iv,passphrase);
 	}
 
-	/**
-	 *
-	 * @param alg
-	 * @param mode
-	 * @param padding
-	 * @param encryptedData
-	 * @param iv
-	 * @param passphrase
-	 * @param keyLength
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidKeyException
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 * @throws UnsupportedEncodingException
-	 */
-	public static byte[] crypt(final CipherMode cipherMode, final Algorithm alg, final Mode mode,
-			final Padding padding, final byte[] data, final byte[] iv,
-			final byte[] passphrase, final int keyLength)
-			throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException,
-			IllegalBlockSizeException, BadPaddingException,
-			UnsupportedEncodingException {
+	public static byte[] crypt(
+			final CipherMode cipherMode,
+			final Algorithm alg,
+			final Mode mode,
+			final Padding padding,
+			final byte[] data,
+			final byte[] iv,
+			final byte[] passphrase)
+			throws CipherException {
 		Logger.start();
-		if (!isSupport(alg, mode, padding)) {
-			throw new NoSuchAlgorithmException();
-		}
-		String Alg = makeIdententity(alg, mode, padding);
-		Logger.debug(Alg);
-		final Cipher cipher = Cipher.getInstance(Alg);
-		final IvParameterSpec ivSpec = mode != Mode.ECB ?
+		Cipher cipher;
+		byte[] result = null;
+		try {
+			if (!isSupport(alg, mode, padding)) {
+				throw new NoSuchAlgorithmException();
+			}
+			String Alg = makeIdententity(alg, mode, padding);
+			Logger.debug(Alg);
+			cipher = Cipher.getInstance(Alg);
+			final IvParameterSpec ivSpec = mode != Mode.ECB ?
 				new IvParameterSpec(iv, 0, getBlockSize(alg)) :
 				null;
-		final SecretKeySpec keySpec = new SecretKeySpec(
+			final SecretKeySpec keySpec = new SecretKeySpec(
 				passphrase,
 				0,
-				keyLength,
+				passphrase.length,
 				Alg);
-		int cipher_mode = CipherMode.Decrypt == cipherMode ?
+			int cipher_mode = CipherMode.Decrypt == cipherMode ?
 				Cipher.DECRYPT_MODE :
 				Cipher.ENCRYPT_MODE ;
-		cipher.init(cipher_mode, keySpec, ivSpec);
-		byte[] result = cipher.doFinal(data);
+			cipher.init(cipher_mode, keySpec, ivSpec);
+			result = cipher.doFinal(data);
+		} catch (NoSuchPaddingException ex) {
+			throw new CipherException(ex);
+		} catch (InvalidKeyException ex) {
+			throw new CipherException(ex);
+		} catch (InvalidAlgorithmParameterException ex) {
+			throw new CipherException(ex);
+		} catch (IllegalBlockSizeException ex) {
+			throw new CipherException(ex);
+		} catch (BadPaddingException ex) {
+			throw new CipherException(ex);
+		} catch (NoSuchAlgorithmException ex) {
+			throw new CipherException(ex);
+		}
 		return result;
 	}
 }

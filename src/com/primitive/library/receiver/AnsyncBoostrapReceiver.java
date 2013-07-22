@@ -16,14 +16,17 @@ import android.content.Intent;
 
 /**
  * AnsyncBoostrapReceiver
- * 
- * Manifest.xml adding <receiver
- * android:name="com.primitive.library.receiver.AnsyncBoostrapReceiver">
- * <intent-filter> <action android:name="android.intent.action.BOOT_COMPLETED"/>
- * </intent-filter> </receiver>
- * 
+ *
+ * Manifest.xml adding
+ * <receiver
+ *   android:name="YourAnsyncBoostrapReceiver">
+ *   <intent-filter>
+ *     <action android:name="android.intent.action.BOOT_COMPLETED"/>
+ *   </intent-filter>
+ * </receiver>
+ *
  * @author xxx
- * 
+ *
  */
 public abstract class AnsyncBoostrapReceiver extends BroadcastReceiver {
 	@Override

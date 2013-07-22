@@ -9,20 +9,10 @@
  */
 package com.primitive.library.helper.cipher;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-import android.util.Base64;
-
 import com.primitive.library.helper.cipher.CipherHelper.Algorithm;
 import com.primitive.library.helper.cipher.CipherHelper.Mode;
 import com.primitive.library.helper.cipher.CipherHelper.Padding;
+import com.primitive.library.helper.cipher.exception.CipherException;
 
 /**
  * CipherHelper
@@ -48,64 +38,31 @@ public class Cipher {
 		this.passphrase = passphrase;
 	}
 
-	/**
-	 *
-	 * @param base64EncryptData
-	 * @param iv
-	 * @param passphrase
-	 * @param keyLength
-	 * @param encode
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws InvalidKeyException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 * @throws UnsupportedEncodingException
-	 */
-	public byte[] decrypt(
-			final String base64EncryptData,
-			final int keyLength,
-			final String encode
-		)
-			throws NoSuchAlgorithmException, InvalidKeyException,
-			NoSuchPaddingException, InvalidAlgorithmParameterException,
-			IllegalBlockSizeException, BadPaddingException,
-			UnsupportedEncodingException {
+	public  byte[] decrypt(
+			final byte[] encryptedData
+			) throws CipherException
+	{
 		return CipherHelper.decrypt(
 				algorithm,
 				mode,
 				padding,
-				Base64.decode(base64EncryptData.getBytes(encode), Base64.DEFAULT),
+				encryptedData,
 				iv,
-				passphrase,
-				keyLength);
+				passphrase
+		);
 	}
 
-	/**
-	 *
-	 * @param encryptedData
-	 * @param iv
-	 * @param passphrase
-	 * @param keyLength
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidKeyException
-	 * @throws InvalidAlgorithmParameterException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 * @throws UnsupportedEncodingException
-	 */
-	public  byte[] decrypt(
-			final byte[] encryptedData,
-			final byte[] passphrase,
-			final int keyLength)
-			throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException,
-			IllegalBlockSizeException, BadPaddingException,
-			UnsupportedEncodingException {
-		return CipherHelper.decrypt(algorithm, mode, padding, encryptedData, iv, passphrase, keyLength);
+	public  byte[] encrypt(
+			final byte[] originalData
+			) throws CipherException
+	{
+		return CipherHelper.encrypt(
+				algorithm,
+				mode,
+				padding,
+				originalData,
+				iv,
+				passphrase
+		);
 	}
 }

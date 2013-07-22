@@ -10,9 +10,9 @@
 package com.primitive.library.helper.analytics;
 
 /**
- * 
+ *
  * @author xxxzxxx
- * 
+ *
  */
 public class Label {
 	public static class Category {
@@ -21,5 +21,6 @@ public class Label {
 		public final static String Fatal = "Fatal";
 		public final static String Trace = "Trace";
 		public final static String Debug = "Debug";
+		public final static String Info = "Info";
 	}
 }

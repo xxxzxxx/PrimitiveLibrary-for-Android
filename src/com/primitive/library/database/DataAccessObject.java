@@ -62,11 +62,12 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	 * @param model
 	 * @return
 	 */
-	public Uri insert(final DataModel<?> model) {
+	public Uri insert(DataModel<?> model) {
 		Logger.start();
 		Logger.info(model.getClass().getSimpleName());
-		return DataAccessObject.insert(context, uri,
-				model.changeContentValues());
+		final Uri uri = DataAccessObject.insert(context, this.uri,model.changeContentValues());
+		model.setUri(uri);
+		return uri;
 	}
 
 	/**
@@ -168,19 +169,20 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	}
 
 	/**
-	 * findById
+	 * findByPrimaryKey
 	 *
 	 * @param id
 	 * @param model
 	 * @return
 	 */
-	public DataModel<?> findById(final String id, final DataModel<?> model) {
+	public DataModel<?> findByPrimaryKey(final DataModel<?> model) {
 		long start = Logger.start();
 		Logger.info(model.getClass().getSimpleName());
-
 		Cursor cursor = DataAccessObject.find(context, uri,
-				model.getProjectiuon(), BaseColumns._ID + "=?",
-				new String[] { id });
+				model.getProjectiuon(),
+				model.getPrimaryKeyQuery(),
+				model.getPrimaryKeyValues()
+				);
 		DataModel<?> result = null;
 
 		try {

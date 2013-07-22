@@ -11,17 +11,58 @@ package com.primitive.library.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 
 public interface DataModel<T> {
+	/**
+	 *
+	 * @param uri
+	 */
+	public void setUri(final Uri uri);
+	/**
+	 *
+	 * @return
+	 */
+	public Uri getUri();
+	/**
+	 *
+	 * @param id
+	 */
 	public void setId(final String id);
-
+	/**
+	 *
+	 * @return
+	 */
 	public String getId();
-
+	/**
+	 *
+	 * @return
+	 */
 	public String[] getProjectiuon();
-
+	/**
+	 *
+	 * @return
+	 */
+	public String getPrimaryKeyQuery();
+	/**
+	 *
+	 * @return
+	 */
+	public String[] getPrimaryKeyValues();
+	/**
+	 *
+	 * @param cursor
+	 * @return
+	 */
 	public DataModel<T> changeModel(final Cursor cursor);
-
+	/**
+	 *
+	 * @return
+	 */
 	public ContentValues changeContentValues();
-
+	/**
+	 *
+	 * @return
+	 */
 	public DataModel<T>[] genericObjectArray();
 }

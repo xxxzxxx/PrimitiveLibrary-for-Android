@@ -19,14 +19,14 @@ public class AnalyticsFactory {
 		GoogleAnalytics
 	};
 
-	static GAHelper gahelper = null;
-
 	public static AnalyticsHelper getHelper(final AnalyticsType analyticsType) {
 		AnalyticsHelper helper = null;
 		switch (analyticsType) {
 		case GoogleAnalytics:
-			gahelper = gahelper != null ? gahelper : new GAHelper();
-			helper = gahelper;
+			helper = new GAHelper();
+			break;
+		default:
+			//TODO: UnSupportedException
 			break;
 		}
 		return helper;
