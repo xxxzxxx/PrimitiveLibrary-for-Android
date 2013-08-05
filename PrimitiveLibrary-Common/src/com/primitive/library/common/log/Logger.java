@@ -38,9 +38,9 @@ public class Logger {
 		public static int comparison(Level compare, Level base) {
 			int result = 0;
 			if (ComparisonMode == Comparison.Greater){
-				result = (compare.value <= base.value) ? 0 : -1;
+				result = (compare.value < base.value) ? 0 : -1;
 			}else if(ComparisonMode == Comparison.Less){
-				result = (compare.value >= base.value) ? 0 : -1;
+				result = (compare.value > base.value) ? 0 : -1;
 			}else if(ComparisonMode == Comparison.Equal){
 				result = (compare.value == base.value) ? 0 : -1;
 			}
@@ -49,9 +49,9 @@ public class Logger {
 		public int comparison(Level base) {
 			int result = 0;
 			if (ComparisonMode == Comparison.Greater){
-				result = (this.value <= base.value) ? 0 : -1;
+				result = (this.value < base.value) ? 0 : -1;
 			}else if(ComparisonMode == Comparison.Less){
-				result = (this.value >= base.value) ? 0 : -1;
+				result = (this.value > base.value) ? 0 : -1;
 			}else if(ComparisonMode == Comparison.Equal){
 				result = (this.value == base.value) ? 0 : -1;
 			}
@@ -61,11 +61,11 @@ public class Logger {
 
 	private static Level LogLevel =
 			BuildConfig.DEBUG
-				? Level.All
+				? Level.Debug
 				: Level.Error;
 
 	public static long start() {
-		long started =  System.currentTimeMillis();
+		long started =  System.nanoTime();
 		if (LogLevel.comparison(Logger.Level.Trace) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
@@ -77,7 +77,7 @@ public class Logger {
 	}
 
 	public static long end() {
-		long end =  System.currentTimeMillis();
+		long end =  System.nanoTime();
 		if (LogLevel.comparison( Logger.Level.Trace) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
@@ -89,13 +89,13 @@ public class Logger {
 	}
 
 	public static long end(final long started) {
-		long end =  System.currentTimeMillis();
+		long end =  System.nanoTime();
 		if (LogLevel.comparison( Logger.Level.Trace) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
 				Log.i(currentTack.getClassName(), currentTack.getMethodName()
-						+ " end["+ (end - started) +"ms]");
+						+ " end["+ (end - started) +"ns]");
 		}
 		return end;
 	}
@@ -176,7 +176,7 @@ public class Logger {
 		}
 	}
 	public static void times(final long started) {
-		final long endl = System.currentTimeMillis();
+		final long endl = System.nanoTime();
 		if (LogLevel.comparison( Logger.Level.Performance) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
