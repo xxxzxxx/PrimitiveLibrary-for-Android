@@ -13,7 +13,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
-public interface DataModel<T> {
+public interface DataModel<MDL> {
 	/**
 	 *
 	 * @param uri
@@ -24,16 +24,6 @@ public interface DataModel<T> {
 	 * @return
 	 */
 	public Uri getUri();
-	/**
-	 *
-	 * @param id
-	 */
-	public void setId(final String id);
-	/**
-	 *
-	 * @return
-	 */
-	public String getId();
 	/**
 	 *
 	 * @return
@@ -54,7 +44,7 @@ public interface DataModel<T> {
 	 * @param cursor
 	 * @return
 	 */
-	public DataModel<T> changeModel(final Cursor cursor);
+	public DataModel<MDL> changeModel(final Cursor cursor);
 	/**
 	 *
 	 * @return
@@ -64,5 +54,5 @@ public interface DataModel<T> {
 	 *
 	 * @return
 	 */
-	public DataModel<T>[] genericObjectArray();
+	public DataModel<MDL>[] genericObjectArray();
 }

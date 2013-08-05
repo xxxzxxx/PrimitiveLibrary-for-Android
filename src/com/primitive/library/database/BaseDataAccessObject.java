@@ -19,7 +19,7 @@ import com.primitive.library.helper.Logger;
 
 public class BaseDataAccessObject {
 	/**
-	 *
+	 * insert contents
 	 * @param context
 	 * @param uri
 	 * @param values
@@ -39,7 +39,7 @@ public class BaseDataAccessObject {
 	}
 
 	/**
-	 *
+	 * update contents
 	 * @param context
 	 * @param uri
 	 * @param values
@@ -49,47 +49,42 @@ public class BaseDataAccessObject {
 	public static int update(final Context context,
 			final Uri uri,
 			final ContentValues values,
-			final String id) {
+			final DataModel<?> model) {
 		long start = Logger.start();
 		Logger.debug(uri);
 		Logger.debug(values);
-		Logger.debug(id);
 
 		int i = context.getContentResolver().update(
 				uri,
 				values,
-				BaseColumns._ID + "=?",
-				new String[] { id }
+				model.getPrimaryKeyQuery(),
+				model.getPrimaryKeyValues()
 			);
-
 		Logger.end(start);
 		return i;
 	}
 
 	/**
-	 *
+	 * delete contents
 	 * @param context
 	 * @param uri
 	 * @param id
 	 * @return
 	 */
-	public static int delete(final Context context, final Uri uri,
-			final String id) {
+	public static int delete(final Context context, final Uri uri,final DataModel<?> model) {
 		long start = Logger.start();
 		Logger.debug(uri);
-
 		int i = context.getContentResolver().delete(
 				uri,
-				BaseColumns._ID + "=?",
-				new String[] { id }
+				model.getPrimaryKeyQuery(),
+				model.getPrimaryKeyValues()
 			);
-
 		Logger.end(start);
 		return i;
 	}
 
 	/**
-	 *
+	 * delete all contents
 	 * @param context
 	 * @param uri
 	 * @return
@@ -109,7 +104,7 @@ public class BaseDataAccessObject {
 	}
 
 	/**
-	 *
+	 * find contents
 	 * @param context
 	 * @param uri
 	 * @param id

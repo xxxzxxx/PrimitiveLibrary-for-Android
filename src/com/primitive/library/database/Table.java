@@ -16,100 +16,106 @@ import android.database.sqlite.SQLiteDatabase;
 import com.primitive.library.helper.Logger;
 
 public abstract class Table {
-	/** */
+	/**  table name */
 	private final String name;
 
-	/** */
+	/** table columns */
 	private Column[] columns;
 
 	/**
-	 *
 	 * @param name
 	 * @param columns
 	 */
 	protected Table(final String name, final Column[] columns) {
-		long start = Logger.start();
 		this.name = name;
 		this.columns = columns;
-		Logger.end(start);
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setColumns(Column[] columns) {
-		this.columns = columns;
-	}
-
 	/**
-	 *
+	 * return defined table columns projection array
 	 * @return
 	 */
 	public String[] getProjectiuon() {
-		long start = Logger.start();
 		ArrayList<String> projection = new ArrayList<String>();
 		for (Column col : columns) {
 			projection.add(col.getName());
 		}
-		Logger.end(start);
 		return projection.toArray(new String[0]);
 	}
 
 	/**
-	 *
+	 * create primary key where SQL statement
 	 * @return
 	 */
 	public String getPrimaryKeyQuery() {
-		long start = Logger.start();
 		StringBuilder sql = new StringBuilder();
 		int i = 0;
 		for (Column col : columns) {
 			if(col.isPrimaryKey()){
 				if(i > 0){
-					sql.append("AND ");
+					sql.append(" AND ");
 				}
 				sql.append(col.getName());
 				sql.append("=?");
 				i++;
 			}
 		}
-		Logger.end(start);
 		return sql.toString();
 	}
 
 	/**
-	 *
+	 * create create table SQL
 	 * @return
 	 */
 	public String getCreateTableSQL() {
-		long start = Logger.start();
 		StringBuilder sql = new StringBuilder();
+		StringBuilder sqlpk = new StringBuilder();
 		sql.append("CREATE TABLE IF NOT EXISTS ");
 		sql.append(this.name);
 		sql.append("(");
 		int i = 0;
+		int ii = 0;
 		for (Column column : this.columns) {
 			if (i > 0) {
 				sql.append(",");
 			}
+			if(column.isPrimaryKey()){
+				if(ii > 0){
+					sqlpk.append(",");
+				}
+				sqlpk.append(column.getName());
+				ii++;
+			}
 			sql.append(column.getDefinitionSQL());
 			i++;
 		}
+		if(ii > 0){
+			sql.append(", primary key (");
+			sql.append(sqlpk.toString());
+			sql.append(")");
+		}
 		sql.append(");");
-		Logger.debug(sql);
-		Logger.end(start);
+		Logger.debug(sql.toString());
 		return sql.toString();
 	}
 
 	/**
-	 *
+	 * return defined all column array
 	 * @return
 	 */
 	public Column[] getColumns() {
 		return columns;
 	}
 
-	public abstract void upgrade(SQLiteDatabase db, int oldVersion,
-			int newVersion);
+	/**
+	 * execute table upgrade process
+	 * @param db
+	 * @param oldVersion
+	 * @param newVersion
+	 */
+	public abstract void upgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion);
 }

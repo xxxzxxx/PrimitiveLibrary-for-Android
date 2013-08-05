@@ -16,7 +16,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.BaseColumns;
 
 import com.primitive.library.helper.Logger;
 
@@ -24,37 +23,30 @@ import com.primitive.library.helper.Logger;
  * @author xxx
  * @param <MDL>
  */
-public class DataAccessObject<MDL extends DataModel<?>> extends
-		BaseDataAccessObject {
-	/**
-	 *
-	 */
+public class DataAccessObject<MDL extends DataModel<?>> extends BaseDataAccessObject {
 	private final Context context;
-	/**
-	 *
-	 */
 	protected final Uri uri;
 
 	/**
-	 *
 	 * @param context
 	 * @param uri
 	 */
 	public DataAccessObject(Context context, final Uri uri) {
-		long start = Logger.start();
+		final long start = Logger.start();
 		this.context = context;
 		this.uri = uri;
 		Logger.end(start);
 	}
 
 	/**
-	 *
 	 * @param values
 	 * @return
 	 */
 	public Uri insert(final ContentValues values) {
-		Logger.start();
-		return DataAccessObject.insert(context, uri, values);
+		final long start = Logger.start();
+		final Uri uri = DataAccessObject.insert(context, this.uri, values);
+		Logger.end(start);
+		return uri;
 	}
 
 	/**
@@ -63,47 +55,52 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	 * @return
 	 */
 	public Uri insert(DataModel<?> model) {
-		Logger.start();
-		Logger.info(model.getClass().getSimpleName());
+		final long start = Logger.start();
 		final Uri uri = DataAccessObject.insert(context, this.uri,model.changeContentValues());
 		model.setUri(uri);
+		Logger.end(start);
 		return uri;
 	}
 
 	/**
 	 *
 	 * @param values
-	 * @param id
+	 * @param model
 	 * @return
 	 */
-	public int update(final ContentValues values, final String id) {
-		Logger.start();
-		return DataAccessObject.update(context, uri, values, id);
+	public int update(final ContentValues values, DataModel<?> model) {
+		final long start = Logger.start();
+		int result =  DataAccessObject.update(context, uri, values, model);
+		Logger.end(start);
+		return result;
 	}
 
 	/**
-	 * update target id recode
+	 * update target primary key recode
 	 *
 	 * @param model
 	 * @param id
 	 * @return
 	 */
-	public int update(final DataModel<?> model, final String id) {
-		Logger.start();
-		Logger.info(model.getClass().getSimpleName());
-		return DataAccessObject.update(context, uri,
-				model.changeContentValues(), id);
+	public int update(final DataModel<?> model) {
+		final long start = Logger.start();
+		int result = DataAccessObject.update(context, uri,
+				model.changeContentValues(), model);
+		Logger.end(start);
+		return result;
 	}
 
 	/**
-	 * delete target id recode
+	 * delete target primary key recode
 	 *
-	 * @param id
+	 * @param model
 	 * @return
 	 */
-	public int delete(final String id) {
-		Logger.start();
-		return DataAccessObject.delete(context, uri, id);
+	public int delete(final DataModel<?> model) {
+		final long start = Logger.start();
+		int result =  DataAccessObject.delete(context, uri, model);
+		Logger.end(start);
+		return result;
 	}
 
 	/**
@@ -112,11 +109,14 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	 * @return
 	 */
 	public int deleteAll() {
-		Logger.start();
-		return DataAccessObject.deleteAll(context, uri);
+		final long start = Logger.start();
+		int result = DataAccessObject.deleteAll(context, uri);
+		Logger.end(start);
+		return result;
 	}
 
 	/**
+	 * return target recode
 	 *
 	 * @param context
 	 * @param whereQuery
@@ -126,7 +126,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	 */
 	public DataModel<?>[] find(final String whereQuery,
 			final String[] whereValue, final DataModel<?> model) {
-		long start = Logger.start();
+		final long start = Logger.start();
 		ArrayList<DataModel<?>> results = new ArrayList<DataModel<?>>();
 		Cursor cursor = DataAccessObject.find(context, uri,
 				model.getProjectiuon(), whereQuery, whereValue);
@@ -150,7 +150,7 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	 * @return
 	 */
 	public DataModel<?>[] findAll(final DataModel<?> model) {
-		long start = Logger.start();
+		final long start = Logger.start();
 		Logger.info(model.getClass().getSimpleName());
 		Cursor cursor = DataAccessObject.find(context, uri,
 				model.getProjectiuon(), null, null);
@@ -176,15 +176,16 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 	 * @return
 	 */
 	public DataModel<?> findByPrimaryKey(final DataModel<?> model) {
-		long start = Logger.start();
+		final long start = Logger.start();
 		Logger.info(model.getClass().getSimpleName());
+		Logger.debug(model.getPrimaryKeyQuery());
+		Logger.debug(model.getPrimaryKeyValues());
 		Cursor cursor = DataAccessObject.find(context, uri,
 				model.getProjectiuon(),
 				model.getPrimaryKeyQuery(),
 				model.getPrimaryKeyValues()
 				);
 		DataModel<?> result = null;
-
 		try {
 			while (cursor.moveToNext()) {
 				result = model.changeModel(cursor);
@@ -194,7 +195,6 @@ public class DataAccessObject<MDL extends DataModel<?>> extends
 				cursor.close();
 			}
 		}
-
 		Logger.end(start);
 		return result;
 	}

@@ -82,7 +82,6 @@ class GAHelper implements AnalyticsHelper {
 
 	@Override
 	public BroadcastReceiver createInstallReceiver(Context ctx, Intent inten) {
-		// TODO �����������ꂽ���\�b�h�E�X�^�u
 		return null;
 	}
 }

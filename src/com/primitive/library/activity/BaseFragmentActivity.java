@@ -11,16 +11,21 @@ package com.primitive.library.activity;
 
 import com.primitive.library.R;
 
-import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentActivity;
 
 /**
  *
  * @author xxxzxxx
  *
  */
-public abstract class BaseActivity extends Activity {
+public abstract class BaseFragmentActivity extends FragmentActivity {
 	protected abstract String getActivityName();
 	protected boolean isTablet(){
 		return getResources().getBoolean(R.bool.tablet);
+	}
+
+	public FragmentTransaction getFragmentTransaction() {
+		return getFragmentManager().beginTransaction();
 	}
 }

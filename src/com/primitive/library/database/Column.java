@@ -10,57 +10,87 @@
 
 package com.primitive.library.database;
 
-import com.primitive.library.helper.Logger;
-
+/**
+ *
+ * @author xxx
+ *
+ */
 public class Column {
 	public enum Type {
-		INTEGER, TEXT, NONE, REAL, NUMERIC,
+		INTEGER,
+		TEXT,
+		NONE,
+		REAL,
+		NUMERIC,
 	};
 
+	/** column type */
 	private final Type type;
+	/** column name */
 	private final String name;
+	/** column is primary key */
 	private final boolean primaryKey;
+	/** column is not null */
 	private final boolean notNull;
 
+	/**
+	 * initialize
+	 * @param type
+	 * @param name
+	 * @param primaryKey
+	 * @param notNull
+	 */
 	public Column(final Type type, final String name, final boolean primaryKey,
 			final boolean notNull) {
-		Logger.start();
 		this.type = type;
 		this.name = name;
 		this.primaryKey = primaryKey;
 		this.notNull = notNull;
 	}
 
+	/**
+	 * return string
+	 */
 	public String toString() {
-		Logger.start();
 		return "Column " + this.hashCode() + "\n name=" + name + "\n type="
 				+ typeToString() + "\n primaryKey="
 				+ (primaryKey == true ? "Yes" : "No") + "\n notNull="
 				+ (notNull == true ? "Yes" : "No");
 	}
 
+	/**
+	 * return type value
+	 * @return
+	 */
 	public Type getType() {
-		Logger.start();
 		return type;
 	}
 
+	/**
+	 * return name value
+	 * @return
+	 */
 	public String getName() {
-		Logger.start();
 		return name;
 	}
 
+	/**
+	 * return primary key property values
+	 * @return
+	 */
 	public boolean isPrimaryKey() {
-		Logger.start();
 		return primaryKey;
 	}
 
+	/**
+	 * return not null property values
+	 * @return
+	 */
 	public boolean isNotNull() {
-		Logger.start();
 		return notNull;
 	}
 
 	private String typeToString() {
-		long start = Logger.start();
 		String result = null;
 		switch (type) {
 		case INTEGER:
@@ -79,23 +109,22 @@ public class Column {
 			result = "NUMERIC";
 			break;
 		}
-		Logger.end(start);
 		return result;
 	}
 
 	public String getDefinitionSQL() {
-		long start = Logger.start();
 		StringBuilder sql = new StringBuilder();
 		sql.append(name);
 		sql.append(" " + typeToString());
+		/*
 		if (primaryKey) {
 			sql.append(" PRIMARY KEY ");
-		} else if (notNull) {
+		} else */
+		if (notNull) {
 			sql.append(" NOT NULL ");
 		} else {
 			sql.append(" ");
 		}
-		Logger.end(start);
 		return sql.toString();
 	}
 }
