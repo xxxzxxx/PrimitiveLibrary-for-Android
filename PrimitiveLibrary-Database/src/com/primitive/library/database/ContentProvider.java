@@ -10,7 +10,6 @@
 
 package com.primitive.library.database;
 
-import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -22,7 +21,7 @@ import android.text.TextUtils;
 import com.primitive.library.common.log.Logger;
 
 /**
- * AbstractContentProvider
+ * ContentProvider
  *
  * <provider android:name="AbstractContentProvider"
  * android:authorities="com.primitive.library.database" />
@@ -30,11 +29,11 @@ import com.primitive.library.common.log.Logger;
  * @author xxx
  *
  */
-public abstract class AbstractContentProvider extends ContentProvider {
-	protected AbstractDataSource ds = null;
-	protected abstract AbstractDataSource createDataSource();
+public abstract class ContentProvider extends android.content.ContentProvider {
+	protected DataSource ds = null;
+	protected abstract DataSource createDataSource();
 
-	 /**
+	/**
 	 * getTableName
 	 *
 	 * @param uri
