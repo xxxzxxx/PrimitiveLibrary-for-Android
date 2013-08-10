@@ -40,19 +40,20 @@ public class DataSource {
 		openHelper = new OpenHelper(this);
 		Logger.end(start);
 	}
-	public OpenHelper getOpenHelper() {
-		Logger.start();
-		if(openHelper == null){
-			Logger.debug("openHelper is null");
+
+	public boolean hasTable(Table table){
+		for(Table tbl : this.tables){
+			if(tbl.equals(table)){
+				return true;
+			}
 		}
-		return openHelper;
+		return false;
+	}
+	public OpenHelper getOpenHelper() {
+		return this.openHelper;
 	}
 
 	public Context getContext() {
-		Logger.start();
-		if(context == null){
-			Logger.debug("context is null");
-		}
-		return context;
+		return this.context;
 	}
 }

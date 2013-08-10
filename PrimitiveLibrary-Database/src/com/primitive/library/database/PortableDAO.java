@@ -19,19 +19,25 @@ import android.net.Uri;
  *
  * @author xxx
  *
- * @param <MDL>
  * @param <TBL>
+ * @param <PKMDL>
+ * @param <MDL>
  */
 public class PortableDAO
 	<
 		TBL extends Table,
-		PKMDL extends PrimaryKeyModel<?>,
-		MDL extends DataModel<?,?>
+		PKMDL extends PrimaryKeyModel<PKMDL>,
+		MDL extends DataModel<PKMDL,MDL>
 	>
 	implements DAO<PKMDL,MDL>
 {
 	final DataSource dataSource;
 	final TBL table;
+
+	/**
+	 * @param dataSource
+	 * @param table
+	 */
 	public PortableDAO(
 			DataSource dataSource,
 			TBL table
@@ -42,19 +48,19 @@ public class PortableDAO
 	}
 
 	@Override
-	public Uri insert(DataModel<?,?> model) {
+	public Uri insert(MDL model) {
 		final SQLiteDatabase database = dataSource.getOpenHelper().getWritableDatabase();
 		database.insert(table.getName(), null, model.changeContentValues());
 		return null;
 	}
 
 	@Override
-	public int update(final PrimaryKeyModel<?> primaryKey,DataModel<?,?> model) {
+	public int update(final PKMDL primaryKey,MDL model) {
 		final SQLiteDatabase database = dataSource.getOpenHelper().getWritableDatabase();
 		return database.update(table.getName(), model.changeContentValues(),primaryKey.getPrimaryKeyQuery(),primaryKey.getPrimaryKeyValues());
 	}
 	@Override
-	public int delete(final PrimaryKeyModel<?> primaryKey) {
+	public int delete(final PKMDL primaryKey) {
 		final SQLiteDatabase database = dataSource.getOpenHelper().getWritableDatabase();
 		return database.delete(table.getName(), primaryKey.getPrimaryKeyQuery(),primaryKey.getPrimaryKeyValues());
 	}
@@ -66,7 +72,7 @@ public class PortableDAO
 	}
 
 	@Override
-	public DataModel<?,?>[] find(String selection,String[] selectionArgs,String orderBy,DataModel<?,?> model){
+	public MDL[] find(String selection,String[] selectionArgs,String orderBy,MDL model){
 		final SQLiteDatabase database = dataSource.getOpenHelper().getReadableDatabase();
 		final Cursor cursor = database.query(
 				table.getName(), //table
@@ -87,7 +93,7 @@ public class PortableDAO
 	}
 
 	@Override
-	public DataModel<?,?> findByPrimaryKey(PrimaryKeyModel<?> primaryKey,DataModel<?,?> model) {
+	public MDL findByPrimaryKey(PKMDL primaryKey,MDL model) {
 		final SQLiteDatabase database = dataSource.getOpenHelper().getReadableDatabase();
 		final Cursor cursor = database.query(
 				table.getName(), //table
@@ -98,7 +104,7 @@ public class PortableDAO
 				null,//having
 				null //orderBy
 				);
-		DataModel<?,?> result = null;
+		MDL result = null;
 		try {
 			while (cursor.moveToNext()) {
 				result = model.changeModel(cursor);
@@ -111,8 +117,8 @@ public class PortableDAO
 		return result;
 	}
 
-	private DataModel<?,?>[] changeCursorToModeArray(Cursor cursor ,DataModel<?,?> model) {
-		ArrayList<DataModel<?,?>> results = new ArrayList<DataModel<?,?>>();
+	private MDL[] changeCursorToModeArray(Cursor cursor ,MDL model) {
+		ArrayList<MDL> results = new ArrayList<MDL>();
 		if(cursor != null){
 			while (cursor.moveToNext()) {
 				results.add(model.changeModel(cursor));
