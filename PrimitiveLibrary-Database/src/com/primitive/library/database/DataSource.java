@@ -1,5 +1,5 @@
 /**
- * AbstractDataSource
+ * DataSource
  *
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  * @author xxxzxxx
@@ -15,21 +15,31 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 import com.primitive.library.common.log.Logger;
 
-public abstract class AbstractDataSource {
+public class DataSource {
 	protected final Table[] tables;
 	private final OpenHelper openHelper;
 	private final Context context;
+	final String dataBaseName;
+	final int dataBaseVersion;
+	final CursorFactory cursorFactory;
 
-	public AbstractDataSource(final Context context, final Table[] tables) {
+	public DataSource(
+			final Context context,
+			final Table[] tables,
+			final String dataBaseName,
+			final int dataBaseVersion,
+			final CursorFactory cursorFactory
+			) {
 		long start = Logger.start();
 		this.context = context;
 		this.tables = tables;
+		this.dataBaseName = dataBaseName;
+		this.dataBaseVersion = dataBaseVersion;
+		this.cursorFactory = cursorFactory;
+
 		openHelper = new OpenHelper(this);
 		Logger.end(start);
 	}
-	public abstract String getDataBaseName();
-	public abstract int getDataBaseVersion();
-	public abstract CursorFactory getCursorFactory();
 	public OpenHelper getOpenHelper() {
 		Logger.start();
 		if(openHelper == null){

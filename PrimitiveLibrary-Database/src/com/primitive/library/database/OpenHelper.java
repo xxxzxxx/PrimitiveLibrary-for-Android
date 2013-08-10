@@ -13,11 +13,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class OpenHelper extends SQLiteOpenHelper {
-	private final AbstractDataSource datasource;
+	private final DataSource datasource;
 
-	public OpenHelper(AbstractDataSource datasource) {
-		super(datasource.getContext(), datasource.getDataBaseName(), datasource
-				.getCursorFactory(), datasource.getDataBaseVersion());
+	public OpenHelper(DataSource datasource) {
+		super(datasource.getContext(), datasource.dataBaseName, datasource
+				.cursorFactory, datasource.dataBaseVersion);
 		this.datasource = datasource;
 	}
 
