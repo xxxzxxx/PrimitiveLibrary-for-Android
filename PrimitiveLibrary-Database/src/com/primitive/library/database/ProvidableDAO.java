@@ -25,12 +25,7 @@ import com.primitive.library.common.log.Logger;
  * @param <PKMDL>
  * @param <MDL>
  */
-public class ProvidableDAO
-	<
-		PKMDL extends PrimaryKeyModel<?>,
-		MDL extends DataModel<?,?>
-	>
-	implements DAO<PKMDL,MDL>
+public class ProvidableDAO<PKMDL extends PrimaryKeyModel<?>,MDL extends DataModel<PKMDL,MDL>> implements DAO<PKMDL,MDL>
 {
 	private final Context context;
 	protected final Uri uri;
@@ -160,7 +155,7 @@ public class ProvidableDAO
 	}
 
 	@Override
-	public Uri insert(DataModel<?,?>  model) {
+	public Uri insert(MDL model) {
 		final long start = Logger.start();
 		final Uri uri = ProvidableDAO.insert(context, this.uri,model.changeContentValues());
 		model.setUri(uri);
@@ -169,7 +164,7 @@ public class ProvidableDAO
 	}
 
 	@Override
-	public int update(final PrimaryKeyModel<?> primaryKey,final DataModel<?,?>  model) {
+	public int update(final PKMDL primaryKey,final MDL model) {
 		final long start = Logger.start();
 		int result = ProvidableDAO.update(
 				context,
@@ -183,7 +178,7 @@ public class ProvidableDAO
 	}
 
 	@Override
-	public int delete(final PrimaryKeyModel<?>  primaryKey) {
+	public int delete(final PKMDL  primaryKey) {
 		final long start = Logger.start();
 		int result =  ProvidableDAO.delete(
 				context,
@@ -204,10 +199,10 @@ public class ProvidableDAO
 	}
 
 	@Override
-	public DataModel<?,?> [] find(String whereQuery,String[] whereValue,String orderBy,DataModel<?,?>  model){
+	public MDL[] find(String whereQuery,String[] whereValue,String orderBy,MDL model){
 		final long start = Logger.start();
 		Cursor cursor = ProvidableDAO.find(context, uri,model.getProjectiuon(), whereQuery, whereValue, orderBy);
-		DataModel<?,?> []results = null;
+		MDL[]results = null;
 		try {
 			results = changeCursorToModeArray(cursor ,model);
 		} finally {
@@ -221,7 +216,7 @@ public class ProvidableDAO
 
 
 	@Override
-	public DataModel<?,?>  findByPrimaryKey(PrimaryKeyModel<?> primaryKey,final DataModel<?,?>  model) {
+	public MDL findByPrimaryKey(PKMDL primaryKey,final MDL model) {
 		final long start = Logger.start();
 		Cursor cursor = ProvidableDAO.find(
 				context,
@@ -231,7 +226,7 @@ public class ProvidableDAO
 				primaryKey.getPrimaryKeyValues(),
 				null
 				);
-		DataModel<?,?>  result = null;
+		MDL result = null;
 		try {
 			while (cursor.moveToNext()) {
 				result = model.changeModel(cursor);
@@ -245,8 +240,13 @@ public class ProvidableDAO
 		return result;
 	}
 
-	private static DataModel<?,?> [] changeCursorToModeArray(Cursor cursor ,DataModel<?,?>  model) {
-		ArrayList<DataModel<?,?> > results = new ArrayList<DataModel<?,?> >();
+	/**
+	 * @param cursor
+	 * @param model
+	 * @return
+	 */
+	private MDL[] changeCursorToModeArray(Cursor cursor ,MDL model) {
+		ArrayList<MDL> results = new ArrayList<MDL>();
 		if(cursor != null){
 			while (cursor.moveToNext()) {
 				results.add(model.changeModel(cursor));
