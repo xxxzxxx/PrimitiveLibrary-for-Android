@@ -44,7 +44,7 @@ public interface DataModel<PKMDL,MDL> extends PrimaryKeyModel<PKMDL>{
 	 * @param cursor
 	 * @return
 	 */
-	public DataModel<PKMDL,MDL> changeModel(final Cursor cursor);
+	public MDL changeModel(final Cursor cursor);
 	/**
 	 *
 	 * @return
@@ -54,5 +54,5 @@ public interface DataModel<PKMDL,MDL> extends PrimaryKeyModel<PKMDL>{
 	 *
 	 * @return
 	 */
-	public DataModel<PKMDL,MDL>[] genericObjectArray();
+	public MDL[] genericObjectArray();
 }

@@ -24,17 +24,17 @@ public interface DAO <PKMDL extends PrimaryKeyModel<?>,MDL extends DataModel<?,?
 	 * @param model
 	 * @return
 	 */
-	public Uri insert(DataModel<?,?> model);
+	public Uri insert(MDL model);
 	/**
 	 * @param model
 	 * @return
 	 */
-	public int update(final PrimaryKeyModel<?> primaryKey,final DataModel<?,?> model);
+	public int update(final PKMDL primaryKey,final MDL model);
 	/**
 	 * @param model
 	 * @return
 	 */
-	public int delete(final PrimaryKeyModel<?> primaryKey);
+	public int delete(final PKMDL primaryKey);
 	/**
 	 * @param whereClause
 	 * @param whereArgs
@@ -49,11 +49,11 @@ public interface DAO <PKMDL extends PrimaryKeyModel<?>,MDL extends DataModel<?,?
 	 * @param model
 	 * @return
 	 */
-	public DataModel<?,?>[] find(String selection,String[] selectionArgs,String orderBy,DataModel<?,?> model);
+	public MDL[] find(String selection,String[] selectionArgs,String orderBy,MDL model);
 	/**
 	 * @param primaryKey
 	 * @param model
 	 * @return
 	 */
-	public DataModel<?,?> findByPrimaryKey(final PrimaryKeyModel<?> primaryKey,final DataModel<?,?> model);
+	public MDL findByPrimaryKey(final PKMDL primaryKey,final MDL model);
 }
