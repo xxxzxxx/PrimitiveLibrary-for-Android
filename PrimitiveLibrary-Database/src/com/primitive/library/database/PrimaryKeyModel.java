@@ -9,11 +9,10 @@
  */
 package com.primitive.library.database;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
-public interface DataModel<PKMDL,MDL> extends PrimaryKeyModel<PKMDL>{
+public interface PrimaryKeyModel<MDL> {
 	/**
 	 *
 	 * @param uri
@@ -24,11 +23,6 @@ public interface DataModel<PKMDL,MDL> extends PrimaryKeyModel<PKMDL>{
 	 * @return
 	 */
 	public Uri getUri();
-	/**
-	 *
-	 * @return
-	 */
-	public String[] getProjectiuon();
 	/**
 	 *
 	 * @return
@@ -44,15 +38,5 @@ public interface DataModel<PKMDL,MDL> extends PrimaryKeyModel<PKMDL>{
 	 * @param cursor
 	 * @return
 	 */
-	public DataModel<PKMDL,MDL> changeModel(final Cursor cursor);
-	/**
-	 *
-	 * @return
-	 */
-	public ContentValues changeContentValues();
-	/**
-	 *
-	 * @return
-	 */
-	public DataModel<PKMDL,MDL>[] genericObjectArray();
+	public PrimaryKeyModel<MDL> changePKModel(final Cursor cursor);
 }
