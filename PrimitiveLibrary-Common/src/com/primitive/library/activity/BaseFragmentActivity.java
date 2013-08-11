@@ -9,7 +9,7 @@
  */
 package com.primitive.library.activity;
 
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentActivity;
 
 import com.primitive.library.R;
@@ -26,6 +26,6 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 	}
 
 	public FragmentTransaction getFragmentTransaction() {
-		return getFragmentManager().beginTransaction();
+		return getSupportFragmentManager().beginTransaction();
 	}
 }
