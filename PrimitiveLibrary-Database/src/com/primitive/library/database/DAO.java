@@ -24,7 +24,7 @@ public interface DAO <PKMDL extends PrimaryKeyModel<?>,MDL extends DataModel<?,?
 	 * @param model
 	 * @return
 	 */
-	public Uri insert(MDL model);
+	public MDL insert(MDL model);
 	/**
 	 * @param model
 	 * @return

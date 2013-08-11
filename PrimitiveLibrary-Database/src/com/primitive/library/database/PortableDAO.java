@@ -48,10 +48,12 @@ public class PortableDAO
 	}
 
 	@Override
-	public Uri insert(MDL model) {
+	public MDL insert(MDL model) {
 		final SQLiteDatabase database = dataSource.getOpenHelper().getWritableDatabase();
 		database.insert(table.getName(), null, model.changeContentValues());
-		return null;
+		@SuppressWarnings("unchecked")
+		PKMDL key = (PKMDL)model;
+		return findByPrimaryKey(key,model);
 	}
 
 	@Override
@@ -69,6 +71,20 @@ public class PortableDAO
 	public int delete(String whereClause,String[] whereArgs) {
 		final SQLiteDatabase database = dataSource.getOpenHelper().getWritableDatabase();
 		return database.delete(table.getName(), whereClause,whereArgs);
+	}
+
+	public Cursor find(String selection,String[] selectionArgs,String orderBy){
+		final SQLiteDatabase database = dataSource.getOpenHelper().getReadableDatabase();
+		final Cursor cursor = database.query(
+				table.getName(), //table
+				table.getProjectiuon(), //columns
+				selection,//selection
+				selectionArgs,//selectionArgs
+				null,//groupBy
+				null,//having
+				orderBy //orderBy
+				);
+		return cursor;
 	}
 
 	@Override
@@ -90,6 +106,20 @@ public class PortableDAO
 				cursor.close();
 			}
 		}
+	}
+
+	public Cursor findByPrimaryKey(PKMDL primaryKey) {
+		final SQLiteDatabase database = dataSource.getOpenHelper().getReadableDatabase();
+		final Cursor cursor = database.query(
+				table.getName(), //table
+				table.getProjectiuon(), //columns
+				primaryKey.getPrimaryKeyQuery(),
+				primaryKey.getPrimaryKeyValues(),
+				null,//groupBy
+				null,//having
+				null //orderBy
+				);
+		return cursor ;
 	}
 
 	@Override

@@ -22,11 +22,12 @@ public abstract class Table {
 	/** table columns */
 	private Column[] columns;
 
+
 	/**
 	 * @param name
 	 * @param columns
 	 */
-	protected Table(final String name, final Column[] columns) {
+	protected Table(final String name, final Column...columns) {
 		this.name = name;
 		this.columns = columns;
 	}

@@ -155,12 +155,15 @@ public class ProvidableDAO<PKMDL extends PrimaryKeyModel<?>,MDL extends DataMode
 	}
 
 	@Override
-	public Uri insert(MDL model) {
+	public MDL insert(MDL model) {
 		final long start = Logger.start();
 		final Uri uri = ProvidableDAO.insert(context, this.uri,model.changeContentValues());
 		model.setUri(uri);
+		@SuppressWarnings("unchecked")
+		PKMDL model2 = (PKMDL)model;
+		MDL model3 = findByPrimaryKey(model2, model);
 		Logger.end(start);
-		return uri;
+		return model3;
 	}
 
 	@Override
