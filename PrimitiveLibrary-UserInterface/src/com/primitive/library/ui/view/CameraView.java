@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.primitive.library.common.Comparison;
 import com.primitive.library.common.log.Logger;
-import com.primitive.library.helper.device.Android;
+import com.primitive.library.devices.Android;
 import com.primitive.library.helper.device.DisplayHelper;
 
 import android.app.AlertDialog;

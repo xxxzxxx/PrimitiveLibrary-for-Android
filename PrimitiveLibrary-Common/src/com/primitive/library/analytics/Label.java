@@ -7,7 +7,7 @@
  * The MIT License (http://opensource.org/licenses/mit-license.php)
  * GPL Version 2 licenses (http://www.gnu.org/licenses/gpl-2.0.html)
  */
-package com.primitive.library.helper.analytics;
+package com.primitive.library.analytics;
 
 /**
  *
@@ -22,5 +22,6 @@ public class Label {
 		public final static String Trace = "Trace";
 		public final static String Debug = "Debug";
 		public final static String Info = "Info";
+		public final static String Performance = "Performance";
 	}
 }

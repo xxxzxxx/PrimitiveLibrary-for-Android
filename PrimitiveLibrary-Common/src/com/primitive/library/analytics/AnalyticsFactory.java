@@ -7,7 +7,7 @@
  * The MIT License (http://opensource.org/licenses/mit-license.php)
  * GPL Version 2 licenses (http://www.gnu.org/licenses/gpl-2.0.html)
  */
-package com.primitive.library.helper.analytics;
+package com.primitive.library.analytics;
 
 /**
  *
@@ -15,12 +15,12 @@ package com.primitive.library.helper.analytics;
  *
  */
 public class AnalyticsFactory {
-	enum AnalyticsType {
+	public enum AnalyticsType {
 		GoogleAnalytics
 	};
 
-	public static AnalyticsHelper getHelper(final AnalyticsType analyticsType) {
-		AnalyticsHelper helper = null;
+	public static Analytics getHelper(final AnalyticsType analyticsType) {
+		Analytics helper = null;
 		switch (analyticsType) {
 		case GoogleAnalytics:
 			helper = new GAHelper();

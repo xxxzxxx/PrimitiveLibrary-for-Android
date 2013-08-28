@@ -202,10 +202,10 @@ public class ProvidableDAO<PKMDL extends PrimaryKeyModel<?>,MDL extends DataMode
 	}
 
 	@Override
-	public MDL[] find(String whereQuery,String[] whereValue,String orderBy,MDL model){
+	public ArrayList<MDL> find(String whereQuery,String[] whereValue,String orderBy,MDL model){
 		final long start = Logger.start();
 		Cursor cursor = ProvidableDAO.find(context, uri,model.getProjectiuon(), whereQuery, whereValue, orderBy);
-		MDL[]results = null;
+		ArrayList<MDL> results = null;
 		try {
 			results = changeCursorToModeArray(cursor ,model);
 		} finally {
@@ -248,14 +248,14 @@ public class ProvidableDAO<PKMDL extends PrimaryKeyModel<?>,MDL extends DataMode
 	 * @param model
 	 * @return
 	 */
-	private MDL[] changeCursorToModeArray(Cursor cursor ,MDL model) {
+	private ArrayList<MDL> changeCursorToModeArray(Cursor cursor ,MDL model) {
 		ArrayList<MDL> results = new ArrayList<MDL>();
 		if(cursor != null){
 			while (cursor.moveToNext()) {
 				results.add(model.changeModel(cursor));
 			}
 		}
-		return results.toArray(model.genericObjectArray());
+		return results;
 	}
 
 }

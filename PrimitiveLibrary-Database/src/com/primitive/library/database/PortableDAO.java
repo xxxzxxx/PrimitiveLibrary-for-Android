@@ -88,7 +88,7 @@ public class PortableDAO
 	}
 
 	@Override
-	public MDL[] find(String selection,String[] selectionArgs,String orderBy,MDL model){
+	public ArrayList<MDL> find(String selection,String[] selectionArgs,String orderBy,MDL model){
 		final SQLiteDatabase database = dataSource.getOpenHelper().getReadableDatabase();
 		final Cursor cursor = database.query(
 				table.getName(), //table
@@ -147,13 +147,13 @@ public class PortableDAO
 		return result;
 	}
 
-	private MDL[] changeCursorToModeArray(Cursor cursor ,MDL model) {
+	private ArrayList<MDL> changeCursorToModeArray(Cursor cursor ,MDL model) {
 		ArrayList<MDL> results = new ArrayList<MDL>();
 		if(cursor != null){
 			while (cursor.moveToNext()) {
 				results.add(model.changeModel(cursor));
 			}
 		}
-		return results.toArray(model.genericObjectArray());
+		return results;
 	}
 }

@@ -10,7 +10,7 @@
 
 package com.primitive.library.database;
 
-import android.net.Uri;
+import java.util.ArrayList;
 
 /**
  *
@@ -49,7 +49,7 @@ public interface DAO <PKMDL extends PrimaryKeyModel<?>,MDL extends DataModel<?,?
 	 * @param model
 	 * @return
 	 */
-	public MDL[] find(String selection,String[] selectionArgs,String orderBy,MDL model);
+	public ArrayList<MDL> find(String selection,String[] selectionArgs,String orderBy,MDL model);
 	/**
 	 * @param primaryKey
 	 * @param model

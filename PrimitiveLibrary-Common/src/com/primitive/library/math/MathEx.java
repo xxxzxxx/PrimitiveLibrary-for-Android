@@ -30,7 +30,7 @@ public class MathEx {
 	}
 
 	/**
-	 *
+	 * 合算
 	 * @param a
 	 * @param b
 	 * @return
@@ -41,7 +41,7 @@ public class MathEx {
 		return sum;
 	}
 	/**
-	 *
+	 * 平均
 	 * @param a
 	 * @param b
 	 * @return
