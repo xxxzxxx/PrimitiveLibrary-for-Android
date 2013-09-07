@@ -9,8 +9,7 @@
  */
 package com.primitive.library.activity;
 
-import android.app.Activity;
-
+import com.actionbarsherlock.app.SherlockActivity;
 import com.primitive.library.R;
 
 /**
@@ -18,7 +17,7 @@ import com.primitive.library.R;
  * @author xxxzxxx
  *
  */
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends SherlockActivity {
 	protected abstract String getActivityName();
 	protected boolean isTablet(){
 		return getResources().getBoolean(R.bool.tablet);

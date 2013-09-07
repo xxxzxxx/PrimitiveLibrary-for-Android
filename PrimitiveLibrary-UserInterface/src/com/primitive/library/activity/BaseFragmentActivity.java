@@ -10,8 +10,8 @@
 package com.primitive.library.activity;
 
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentActivity;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.primitive.library.R;
 
 /**
@@ -19,7 +19,7 @@ import com.primitive.library.R;
  * @author xxxzxxx
  *
  */
-public abstract class BaseFragmentActivity extends FragmentActivity {
+public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
 	protected abstract String getActivityName();
 	protected boolean isTablet(){
 		return getResources().getBoolean(R.bool.tablet);

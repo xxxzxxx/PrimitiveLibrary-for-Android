@@ -9,6 +9,8 @@
  */
 package com.primitive.library.activity;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -16,11 +18,11 @@ import android.os.Bundle;
 import android.os.Handler;
 
 /**
- * 
+ *
  * @author xxxzxxx
- * 
+ *
  */
-public abstract class BoostrapActivity extends BaseActivity {
+public abstract class BoostrapActivity extends SherlockFragmentActivity {
 	private AsyncTask<Object, Integer, Long> _boostrapTask;
 	private Handler _handler = new Handler();
 	protected long _waitDisplayTime = 500;

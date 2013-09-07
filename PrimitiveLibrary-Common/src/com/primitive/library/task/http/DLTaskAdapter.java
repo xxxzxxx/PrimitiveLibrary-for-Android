@@ -37,7 +37,7 @@ public class DLTaskAdapter implements HttpTask.Adapter{
 	protected int bufferSize = 1024 * 8;
 
 	/**
-	 *
+	 * DLTaskAdapter
 	 * @param context
 	 * @param adapter
 	 * @param action
