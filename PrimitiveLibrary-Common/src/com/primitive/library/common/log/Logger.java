@@ -1,24 +1,29 @@
-/**
- * Logger
- *
- * @license Dual licensed under the MIT or GPL Version 2 licenses.
- * @author xxxzxxx
- * Copyright 2013, Primitive, inc.
- * The MIT License (http://opensource.org/licenses/mit-license.php)
- * GPL Version 2 licenses (http://www.gnu.org/licenses/gpl-2.0.html)
- */
 package com.primitive.library.common.log;
 
+import android.hardware.Camera;
 import android.os.Debug;
 import android.util.Log;
 
-import com.primitive.library.BuildConfig;
-import com.primitive.library.common.Comparison;
+import java.math.BigInteger;
+import java.security.Principal;
+import java.security.PublicKey;
+import 	java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * Logger
  */
 public class Logger {
+	public enum Comparison{
+		Greater,
+		Less,
+		EqualGreater,
+		EqualLess,
+		Equal,
+	};
 	public static class Level {
 		public static final Comparison ComparisonMode = Comparison.Less;
 		public static final Level Nothing = new Level(0);
@@ -60,9 +65,13 @@ public class Logger {
 	}
 
 	private static Level LogLevel =
+			Level.All
+			/*
 			BuildConfig.DEBUG
-				? Level.Debug
-				: Level.Error;
+				? Level.All
+				: Level.Error
+				*/
+	;
 
 	public static long start() {
 		long started =  System.nanoTime();
@@ -110,12 +119,16 @@ public class Logger {
 		}
 	}
 
-	public static void info(String msg) {
+	public static void info(String format,Object... args) {
 		if (LogLevel.comparison( Logger.Level.Info) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
-			if (currentTack != null) {
-				Log.i(currentTack.getClassName(), msg);
+			if (currentTack != null){
+				if(args != null && args.length > 0){
+					Log.i(currentTack.getClassName(), String.format(format, args));
+				} else {
+					Log.i(currentTack.getClassName(), format);
+				}
 			}
 		}
 	}
@@ -125,16 +138,24 @@ public class Logger {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
 			if (currentTack != null)
-				Log.e(currentTack.getClassName(), ex.getMessage(), ex);
+			{
+				String message = ex.getMessage();
+				output(Level.Error,currentTack,message);
+			}
 		}
 	}
 
-	public static void warm(String msg) {
+	public static void warm(String format,Object... args) {
 		if (LogLevel.comparison( Logger.Level.Warm) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
-			if (currentTack != null)
-				Log.w(currentTack.getClassName(), msg);
+			if (currentTack != null){
+				if(args != null && args.length > 0){
+					Log.w(currentTack.getClassName(), String.format(format, args));
+				} else {
+					Log.w(currentTack.getClassName(), format);
+				}
+			}
 		}
 	}
 
@@ -147,34 +168,20 @@ public class Logger {
 		}
 	}
 
-	public static void debug(String msg) {
+	public static void debug(String format,Object... args) {
 		if (LogLevel.comparison( Logger.Level.Debug) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
 					.getStackTrace()[3];
-			if (currentTack != null) {
-				Log.d(currentTack.getClassName(), msg != null ? msg : "empty strings");
+			if (currentTack != null){
+				if(args != null && args.length > 0){
+					Log.d(currentTack.getClassName(), String.format(format, args));
+				} else {
+					Log.d(currentTack.getClassName(), format);
+				}
 			}
 		}
 	}
 
-	public static void debug(long l) {
-		if (LogLevel.comparison( Logger.Level.Debug) >= 0) {
-			StackTraceElement currentTack = Thread.currentThread()
-					.getStackTrace()[3];
-			if (currentTack != null)
-				Log.d(currentTack.getClassName(), "" + l);
-		}
-	}
-
-	public static void debug(Object obj) {
-		if (LogLevel.comparison( Logger.Level.Debug) >= 0) {
-			StackTraceElement currentTack = Thread.currentThread()
-					.getStackTrace()[3];
-			if (currentTack != null)
-				Log.d(currentTack.getClassName(), obj != null ? obj.toString()
-						: "obj is null");
-		}
-	}
 	public static void times(final long started) {
 		final long endl = System.nanoTime();
 		if (LogLevel.comparison( Logger.Level.Performance) >= 0) {
@@ -186,6 +193,7 @@ public class Logger {
 			}
 		}
 	}
+
 	public static void times(final long started,final long endl) {
 		if (LogLevel.comparison( Logger.Level.Performance) >= 0) {
 			StackTraceElement currentTack = Thread.currentThread()
@@ -197,18 +205,172 @@ public class Logger {
 		}
 	}
 
-	public static void heap() {
-		if (LogLevel.comparison( Logger.Level.Performance) >= 0) {
-			StackTraceElement currentTack = Thread.currentThread()
-					.getStackTrace()[3];
-			String msg = "heap : Free="
-					+ Long.toString(Debug.getNativeHeapFreeSize() / 1024)
-					+ "kb" + "\n Allocated="
-					+ Long.toString(Debug.getNativeHeapAllocatedSize() / 1024)
-					+ "kb" + "\n Size="
-					+ Long.toString(Debug.getNativeHeapSize() / 1024) + "kb";
-			if (currentTack != null)
-				Log.v(currentTack.getClassName(), msg);
+	public static long heap() {
+		final long free = Debug.getNativeHeapFreeSize();
+		final long allocated = Debug.getNativeHeapAllocatedSize();
+		final long heap = Debug.getNativeHeapSize();
+		StackTraceElement currentTack = Thread.currentThread()
+				.getStackTrace()[3];
+		String msg = String.format("heap : Free=%d kb\n Allocated=%d kb\n Size=%d",free,allocated,heap);
+		if (currentTack != null)
+			Log.v(currentTack.getClassName(), msg);
+		return heap;
+	}
+
+	public static boolean isNull(final String tag, final Object arg) {
+		if (LogLevel.comparison(Logger.Level.Debug) >= 0) {
+			StackTraceElement currentTack = Thread.currentThread().getStackTrace()[3];
+			if (currentTack != null){
+				String message = (arg != null)
+						? String.format("[%s] is not null:[%s]", tag,arg.getClass().getSimpleName())
+						: String.format("[%s] is null", tag);
+				output(Level.Debug,currentTack,message);
+			}
+		}
+		return (arg == null);
+	}
+
+	private static void output(final Logger.Level level,final StackTraceElement currentTack,final String message)
+	{
+		final String className = currentTack.getClassName();
+//		final int lineNumber = currentTack.getLineNumber();
+//		final String fileName = currentTack.getFileName();
+//		final String methodName = currentTack.getMethodName();
+		final String msg = message != null ? message : "null";//String.format("%s.%s(%s:%d)\n%s", className, methodName, fileName, lineNumber, message);
+		if (level == Level.Trace)
+			Log.i(className, msg);
+		if (level == Level.Info)
+			Log.i(className, msg);
+		if (level == Level.Error)
+			Log.e(className, msg);
+		if (level == Level.Debug)
+			Log.d(className, msg);
+		if (level == Level.Warm)
+			Log.w(className, msg);
+		if (level == Level.Performance)
+			Log.i(className, msg);
+	}
+
+	public static void debug(final String tag, final Certificate[] certificates)
+	{
+		for (final Certificate cert : certificates)
+		{
+			debug(tag,cert);
+		}
+	}
+
+	public static void debug(final String tag, final Certificate certificate)
+	{
+		Logger.debug("-------------- Certificate -------------");
+		try
+		{
+			final X509Certificate x509 =
+					(certificate instanceof X509Certificate)
+					? ((X509Certificate)certificate)
+					: null
+			;
+
+			Logger.debug("%s Type:[%s]",tag,certificate.getType());
+			Logger.debug(tag,certificate.getPublicKey());
+			if (x509 != null)
+			{
+				Logger.debug(x509.getIssuerDN());
+				Logger.debug("CriticalExtensionOID:[%s]",x509.getCriticalExtensionOIDs());
+				try
+				{
+					Collection<String> usage = x509.getExtendedKeyUsage();
+					Logger.debug("ExtendedKeyUsage:[%s]",usage);
+				}
+				catch (final Throwable ex)
+				{
+					Logger.err(ex);
+				}
+				Logger.debug("NotAfter",x509.getNotAfter());
+				Logger.debug("NotBefore",x509.getNotBefore());
+				Logger.debug("SerialNumber",x509.getSerialNumber());
+			}
+		}
+		finally
+		{
+			Logger.debug("-------------- Certificate -------------");
+		}
+	}
+
+	public static void debug(final String tag, final BigInteger integer)
+	{
+		if (integer != null)
+		{
+			Logger.debug("%s bit count: [%d]",tag,integer.bitCount());
+			Logger.debug("%s bit length: [%d]",tag,integer.bitLength());
+			Logger.debug("%s byte value: [%s]",tag,integer.byteValue());
+			Logger.debug("%s doubleValue: [%l]",tag,integer.doubleValue());
+		}
+	}
+
+	public static void debug(final String tag, final Date date)
+	{
+		if (date != null)
+		{
+			final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			Logger.debug("%s: [%s]",tag,dateFormat.format(date));
+		}
+		else
+		{
+			Logger.debug("%s: [is null]",tag);
+		}
+	}
+
+	public static void debug(final String tag,final PublicKey publicKey)
+	{
+		final String type = "Public Key";
+		if (publicKey != null)
+		{
+			Logger.debug("%s %s Algorithm: [%s]",tag,type,publicKey.getAlgorithm());
+			Logger.debug("%s %s Format: [%s]",tag,type,publicKey.getFormat());
+			Logger.debug("%s %s Encode: [%s]",tag,type,publicKey.getEncoded());
+		}
+		else
+		{
+			Logger.debug("%s %s: [is null]",tag,type);
+		}
+	}
+
+	public static void debug(final String format,final Collection<String> sets)
+	{
+		for (final String value : sets)
+		{
+			Logger.debug(format,value);
+		}
+	}
+
+	public static void debug(final Principal principal)
+	{
+		final String tag = "Principal";
+		if (principal != null)
+		{
+			Logger.debug("%s Algorithm: [%s]",tag,principal.getName());
+		}
+		else
+		{
+			Logger.debug("%s: [is null]",tag);
+		}
+	}
+	@SuppressWarnings("deprecation")
+	public static void camerainfo()
+	{
+		Camera c = null;
+		try
+		{
+			c = Camera.open();
+			Logger.debug("", c.getParameters().flatten());
+		}
+		catch (Throwable ex)
+		{
+			Logger.err(ex);
+		}
+		finally
+		{
+			if(c != null) c.release();
 		}
 	}
 }
