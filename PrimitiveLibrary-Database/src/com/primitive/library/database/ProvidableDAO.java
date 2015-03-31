@@ -41,8 +41,8 @@ public class ProvidableDAO<PKMDL extends PrimaryKeyModel<?>,MDL extends DataMode
 			final Uri uri,
 			final ContentValues values) {
 		long start = Logger.start();
-		Logger.debug(uri);
-		Logger.debug(values);
+		Logger.debug("uri=%s",uri);
+		Logger.debug("values=%s",values);
 
 		Uri result =  context.getContentResolver().insert(uri, values);
 
@@ -113,9 +113,9 @@ public class ProvidableDAO<PKMDL extends PrimaryKeyModel<?>,MDL extends DataMode
 			final String orderBy
 	) {
 		long start = Logger.start();
-		Logger.debug(uri);
-		Logger.debug(projectiuon);
-		Logger.debug(whereQuery);
+		Logger.debug("uri:%s",uri);
+		Logger.debug("projectiuon:%s",projectiuon.toString());
+		Logger.debug("whereQuery:%s",whereQuery);
 		Cursor cursor = context.getContentResolver().query(
 				uri,
 				projectiuon,
