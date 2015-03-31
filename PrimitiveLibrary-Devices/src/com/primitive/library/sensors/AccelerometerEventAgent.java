@@ -16,7 +16,7 @@ public class AccelerometerEventAgent
 		extends
 		SensorEventListenerAgent<AccelerometerEventAgent.AccelerometerEventNotification> {
 	public static final int Position_Stand = 1, Position_Flat = 2,
-			Position_Flex = 3, Orientation_Landscape = 4, Inverse = 8;
+			Position_Flex = 3, Orientation_Landscape = 4, Inverse = 8, Unknown = 0;
 
 	public enum Orientation {
 		Landscape, Portrait,
@@ -53,6 +53,14 @@ public class AccelerometerEventAgent
 
 	public static int getStandingPosition(final double[] degreeies) {
 		int standingPosition = 0;
+		if (degreeies == null)
+		{
+			return Unknown;
+		}
+		if (degreeies.length != 3)
+		{
+			return Unknown;
+		}
 		final double x = degreeies[0], y = degreeies[1], z = degreeies[2];
 
 		Logger.debug("degreeies :%f,%f,%f", x, y, z);
